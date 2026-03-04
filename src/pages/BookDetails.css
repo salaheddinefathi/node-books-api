@@ -1,0 +1,348 @@
+.book-details-page {
+    padding-top: 100px;
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.25rem;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    transition: var(--transition-fast);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: fit-content;
+    box-shadow: var(--shadow-sm);
+}
+
+.back-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    transform: translateX(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.details-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+}
+
+.details-image {
+    position: sticky;
+    top: 100px;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    aspect-ratio: 1 / 1.5;
+}
+
+.details-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s ease;
+}
+
+.details-image:hover img {
+    transform: scale(1.05);
+}
+
+.details-badge {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.details-info {
+    padding: 1rem 0;
+}
+
+.breadcrumb {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.breadcrumb a {
+    transition: var(--transition-fast);
+}
+
+.breadcrumb a:hover {
+    color: var(--primary);
+}
+
+.breadcrumb span {
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.details-info h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+    letter-spacing: -0.04em;
+}
+
+.details-author {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.details-author span {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.details-rating {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.stars {
+    display: flex;
+    gap: 0.25rem;
+    color: var(--secondary);
+}
+
+.details-rating span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+    background: var(--bg-dots);
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+}
+
+.details-price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 2.5rem;
+    letter-spacing: -0.02em;
+}
+
+.details-description {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.details-description h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.details-description p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.inventory-status {
+    margin-bottom: 2.5rem;
+    font-weight: 800;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.in-stock {
+    color: #10b981;
+}
+
+.out-of-stock {
+    color: #ef4444;
+}
+
+.details-actions {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 3.5rem;
+    align-items: center;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0.5rem;
+    gap: 1.5rem;
+}
+
+.quantity-selector button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: var(--transition-fast);
+}
+
+.quantity-selector button:hover:not(:disabled) {
+    color: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.quantity-selector span {
+    font-weight: 800;
+    font-size: 1.1rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.add-to-cart-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: var(--primary);
+    color: white;
+    padding: 1.25rem;
+    border-radius: 18px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    transition: var(--transition);
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+}
+
+.trust-badges {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.trust-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.trust-item .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trust-item span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+@media (max-width: 1024px) {
+    .details-layout {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .details-image {
+        position: relative;
+        top: 0;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .details-info h1 {
+        font-size: 2.75rem;
+        text-align: center;
+    }
+
+    .details-author {
+        text-align: center;
+    }
+
+    .details-rating,
+    .details-price,
+    .inventory-status,
+    .details-actions {
+        justify-content: center;
+    }
+
+    .details-description {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .details-info h1 {
+        font-size: 2.25rem;
+    }
+
+    .details-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .quantity-selector {
+        justify-content: center;
+    }
+
+    .trust-badges {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .trust-item {
+        flex-direction: row;
+        text-align: left;
+    }
+}

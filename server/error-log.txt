@@ -1,0 +1,11 @@
+
+Error Name: TypeError
+Error Message: next is not a function
+Validation Errors: None
+Stack: TypeError: next is not a function
+    at model.<anonymous> (C:\Users\PC\Desktop\bookstor\server\models\User.js:25:9)
+    at Kareem.execPre (C:\Users\PC\Desktop\bookstor\server\node_modules\kareem\index.js:68:39)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async model.$__save (C:\Users\PC\Desktop\bookstor\server\node_modules\mongoose\lib\model.js:376:5)
+    at async model.save (C:\Users\PC\Desktop\bookstor\server\node_modules\mongoose\lib\model.js:642:5)
+    at async test (C:\Users\PC\Desktop\bookstor\server\test-db.js:19:9)

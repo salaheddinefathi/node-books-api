@@ -1,0 +1,218 @@
+.catalog-page {
+    padding-top: 100px;
+    min-height: 100vh;
+}
+
+.catalog-header {
+    margin-bottom: 3rem;
+    text-align: center;
+    padding: 40px 0;
+    position: relative;
+}
+
+.catalog-header h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+    letter-spacing: -0.04em;
+}
+
+.catalog-header h1 span {
+    background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.catalog-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Discovery Bar */
+.discovery-bar {
+    position: sticky;
+    top: 90px;
+    z-index: 100;
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 1.25rem;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow-lg);
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.discovery-top {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.search-box {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1.25rem;
+    color: var(--text-muted);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.9rem 1rem 0.9rem 3.25rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: var(--transition-fast);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--surface);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.sort-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0 1.25rem;
+    color: var(--text-main);
+}
+
+.sort-dropdown select {
+    background: transparent;
+    border: none;
+    padding: 0.9rem 0;
+    color: var(--text-main);
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.sort-dropdown select:focus {
+    outline: none;
+}
+
+.category-scroll {
+    display: flex;
+    gap: 0.6rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+}
+
+.category-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.cat-pill {
+    white-space: nowrap;
+    padding: 0.6rem 1.4rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition: var(--transition-fast);
+    cursor: pointer;
+}
+
+.cat-pill:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.cat-pill.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.catalog-results-info {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.catalog-results-info::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+.loading-state,
+.error-state,
+.no-results {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+    .catalog-header h1 {
+        font-size: 2.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .catalog-header h1 {
+        font-size: 2.25rem;
+    }
+
+    .discovery-bar {
+        padding: 1rem;
+        top: 80px;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+    }
+
+    .discovery-top {
+        flex-direction: column;
+    }
+
+    .sort-dropdown {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .search-box input {
+        padding: 0.8rem 1rem 0.8rem 3rem;
+        font-size: 0.95rem;
+    }
+}
