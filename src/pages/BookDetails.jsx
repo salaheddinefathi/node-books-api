@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 import { Star, ShoppingCart, ArrowLeft, Truck, ShieldCheck, RefreshCw } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
+import API_BASE_URL from '../config/api';
 import './BookDetails.css';
 
 const BookDetails = () => {
-    const PUBLIC_BACKEND_URL = "http://localhost:5000";
     const { id } = useParams();
     const navigate = useNavigate();
     const { addToCart } = useCart();
@@ -18,7 +18,7 @@ const BookDetails = () => {
     useEffect(() => {
         const fetchBook = async () => {
             try {
-                const res = await fetch(`${PUBLIC_BACKEND_URL}/api/books/${id}`);
+                const res = await fetch(`${API_BASE_URL}/api/books/${id}`);
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message || 'Book not found');
                 setBook(data);
@@ -81,7 +81,7 @@ const BookDetails = () => {
                         className="details-image"
                     >
                         <img
-                            src={book.cover.startsWith('http') ? book.cover : `${PUBLIC_BACKEND_URL}${book.cover}`}
+                            src={book.cover.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
                             alt={book.title}
                         />
                         <div className="details-badge">{book.category}</div>

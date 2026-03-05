@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import { Search, Filter, Star, ShoppingCart, SlidersHorizontal } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
+import API_BASE_URL from '../config/api';
 import './Catalog.css';
 
 const Catalog = () => {
-    const PUBLIC_BACKEND_URL = "http://localhost:5000";
     const { addToCart } = useCart();
     const [books, setBooks] = useState([]);
     const [filteredBooks, setFilteredBooks] = useState([]);
@@ -52,7 +52,7 @@ const Catalog = () => {
 
     const fetchBooks = async () => {
         try {
-            const res = await fetch(`${PUBLIC_BACKEND_URL}/api/books`);
+            const res = await fetch(`${API_BASE_URL}/api/books`);
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || 'Failed to fetch books');
             setBooks(data);
@@ -166,7 +166,7 @@ const Catalog = () => {
                                     <Link to={`/book/${book._id}`}>
                                         <div className="book-cover">
                                             <img
-                                                src={book.cover.startsWith('http') ? book.cover : `${PUBLIC_BACKEND_URL}${book.cover}`}
+                                                src={book.cover.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
                                                 alt={book.title}
                                                 style={{ opacity: book.stock <= 0 ? 0.5 : 1 }}
                                             />

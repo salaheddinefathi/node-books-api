@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import toast from 'react-hot-toast';
 import { Lock, User, LogIn, BookOpen } from 'lucide-react';
 import './AdminLogin.css';
@@ -19,7 +20,7 @@ const AdminLogin = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
+            const response = await axios.post(`${API_BASE_URL}/api/auth/login`, credentials);
             localStorage.setItem('adminToken', response.data.token);
             localStorage.setItem('adminUser', response.data.username);
             toast.success('Admin access granted', {

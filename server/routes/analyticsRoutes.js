@@ -71,6 +71,35 @@ router.get('/', auth, async (req, res) => {
             { $limit: 5 }
         ]);
 
+        // Generate chart data for last 7 days
+        const last7Days = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - i);
+            d.setHours(0, 0, 0, 0);
+            const dEnd = new Date(d);
+            dEnd.setDate(dEnd.getDate() + 1);
+            const daySales = await getSalesForPeriod(d, dEnd);
+            last7Days.push({
+                name: d.toLocaleDateString('en-US', { weekday: 'short' }),
+                ventes: daySales.totalSales || 0
+            });
+        }
+
+        // Generate chart data for last 4 weeks
+        const last4Weeks = [];
+        for (let i = 3; i >= 0; i--) {
+            const dEnd = new Date(now);
+            dEnd.setDate(dEnd.getDate() - i * 7);
+            const dStart = new Date(dEnd);
+            dStart.setDate(dStart.getDate() - 7);
+            const weekSales = await getSalesForPeriod(dStart, dEnd);
+            last4Weeks.push({
+                name: `Week ${4 - i}`,
+                ventes: weekSales.totalSales || 0
+            });
+        }
+
         res.json({
             totalRevenue: totalData.totalSales,
             totalOrders: totalData.count,
@@ -82,7 +111,11 @@ router.get('/', auth, async (req, res) => {
                 weekly: calculateTrend(weeklyData.totalSales, lastWeekData.totalSales),
                 monthly: calculateTrend(monthlyData.totalSales, lastMonthData.totalSales)
             },
-            topBooks
+            topBooks,
+            chartData: {
+                week: last7Days,
+                month: last4Weeks
+            }
         });
 
     } catch (err) {

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, ArrowRight, ChevronDown, ChevronUp, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../config/api';
 import './MyOrders.css';
 
 const statusColors = {
@@ -23,7 +24,7 @@ const MyOrders = () => {
         const fetchMyOrders = async () => {
             try {
                 const token = localStorage.getItem('userToken');
-                const res = await fetch('http://localhost:5000/api/orders/my', {
+                const res = await fetch(`${API_BASE_URL}/api/orders/my`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
@@ -114,7 +115,7 @@ const MyOrders = () => {
                                                     {order.items.map((item, idx) => (
                                                         <div key={idx} className="order-item-row">
                                                             <img
-                                                                src={item.cover?.startsWith('http') ? item.cover : `http://localhost:5000${item.cover}`}
+                                                                src={item.cover?.startsWith('http') ? item.cover : `${API_BASE_URL}${item.cover}`}
                                                                 alt={item.title}
                                                                 className="order-item-cover"
                                                             />

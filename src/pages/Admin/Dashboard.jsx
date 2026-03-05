@@ -23,10 +23,10 @@ import {
     BarChart3
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import API_BASE_URL from '../../config/api';
 import './Admin.css';
 
 const Dashboard = () => {
-    const PUBLIC_BACKEND_URL = "http://localhost:5000";
     const [books, setBooks] = useState([]);
     const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'library', or 'orders'
     const [showModal, setShowModal] = useState(false);
@@ -64,7 +64,7 @@ const Dashboard = () => {
         setOrdersLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await fetch(`${PUBLIC_BACKEND_URL}/api/orders`, {
+            const res = await fetch(`${API_BASE_URL}/api/orders`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -123,7 +123,7 @@ const Dashboard = () => {
 
     const fetchSettings = async () => {
         try {
-            const res = await fetch(`${PUBLIC_BACKEND_URL}/api/settings`);
+            const res = await fetch(`${API_BASE_URL}/api/settings`);
             if (res.ok) {
                 const data = await res.json();
                 setSettings(prev => ({ ...prev, ...data }));
@@ -137,7 +137,7 @@ const Dashboard = () => {
         setIsSavingSettings(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await fetch(`${PUBLIC_BACKEND_URL}/api/settings`, {
+            const res = await fetch(`${API_BASE_URL}/api/settings`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ const Dashboard = () => {
     const handleInlineUpdate = async (id, updates) => {
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await fetch(`${PUBLIC_BACKEND_URL}/api/books/${id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/books/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ const Dashboard = () => {
     const fetchBooks = async () => {
         try {
             setError(null);
-            const res = await fetch(`${PUBLIC_BACKEND_URL}/api/books`);
+            const res = await fetch(`${API_BASE_URL}/api/books`);
             const data = await res.json();
 
             if (res.status === 401 || res.status === 403) {
@@ -206,7 +206,7 @@ const Dashboard = () => {
     const updateOrderStatus = async (id, newStatus) => {
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await fetch(`http://localhost:5000/api/orders/${id}/status`, {
+            const res = await fetch(`${API_BASE_URL}/api/orders/${id}/status`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -242,7 +242,7 @@ const Dashboard = () => {
 
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await fetch('http://localhost:5000/api/books', {
+            const res = await fetch(`${API_BASE_URL}/api/books`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -277,7 +277,7 @@ const Dashboard = () => {
         console.log('Attempting to delete book with ID:', bookToDelete);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await fetch(`http://localhost:5000/api/books/${bookToDelete}`, {
+            const res = await fetch(`${API_BASE_URL}/api/books/${bookToDelete}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -519,7 +519,7 @@ const Dashboard = () => {
                                             <tr key={book._id}>
                                                 <td>
                                                     <img
-                                                        src={book.cover?.startsWith('http') ? book.cover : `${PUBLIC_BACKEND_URL}${book.cover}`}
+                                                        src={book.cover?.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
                                                         alt={book.title}
                                                         style={{ width: '40px', height: '60px', borderRadius: '4px', objectFit: 'cover' }}
                                                     />

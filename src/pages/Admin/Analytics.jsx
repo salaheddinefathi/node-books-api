@@ -21,9 +21,10 @@ import {
     BookPlus
 } from 'lucide-react';
 import './Admin.css';
+import SalesLineChart from '../../components/SalesLineChart';
+import API_BASE_URL from '../../config/api';
 
 const Analytics = () => {
-    const PUBLIC_BACKEND_URL = "http://localhost:5000";
     const [stats, setStats] = useState({
         totalRevenue: 0,
         dailyRevenue: 0,
@@ -42,7 +43,7 @@ const Analytics = () => {
     const fetchAnalytics = async () => {
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await fetch(`${PUBLIC_BACKEND_URL}/api/analytics`, {
+            const res = await fetch(`${API_BASE_URL}/api/analytics`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -55,6 +56,14 @@ const Analytics = () => {
     };
 
     const [profitTimeFilter, setProfitTimeFilter] = useState('month'); // 'day', 'week', 'month', 'total'
+    const [chartTimeframe, setChartTimeframe] = useState('week'); // 'week', 'month'
+
+    const getChartData = () => {
+        if (!stats.chartData) return [];
+        if (chartTimeframe === 'week') return stats.chartData.week;
+        if (chartTimeframe === 'month') return stats.chartData.month;
+        return [];
+    };
 
     // Use stats from server
     const { dailyRevenue, weeklyRevenue, monthlyRevenue, totalRevenue, trends, totalOrders } = stats;
@@ -164,7 +173,7 @@ const Analytics = () => {
                     </motion.div>
                 </div>
 
-                <div className="sales-breakdown-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                <div className="analytics-grid">
                     {[
                         { label: 'Today', value: dailyRevenue, color: '#f59e0b', trend: trends.daily },
                         { label: 'This Week', value: weeklyRevenue, color: '#8b5cf6', trend: trends.weekly },
@@ -191,12 +200,28 @@ const Analytics = () => {
                         </motion.div>
                     ))}
                 </div>
-                <div className="analytics-details-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '1.5rem', marginTop: '2rem' }}>
-                    <section className="admin-section">
-                        <div className="section-title">
-                            <h2>Sales Trend</h2>
-                            <div className="chart-placeholder" style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-main)', borderRadius: '12px', border: '1px dashed var(--border)' }}>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Growth Chart Under Development</span>
+                <div className="analytics-details-grid">
+                    <section className="admin-section" style={{ display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: '700', margin: 0 }}>Sales Trend</h2>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', background: 'var(--bg-main)', padding: '0.25rem', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                                <button
+                                    onClick={() => setChartTimeframe('week')}
+                                    style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', border: 'none', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', backgroundColor: chartTimeframe === 'week' ? '#4f46e5' : 'transparent', color: chartTimeframe === 'week' ? 'white' : 'var(--text-muted)', transition: 'all 0.2s' }}
+                                >
+                                    This Week
+                                </button>
+                                <button
+                                    onClick={() => setChartTimeframe('month')}
+                                    style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', border: 'none', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', backgroundColor: chartTimeframe === 'month' ? '#4f46e5' : 'transparent', color: chartTimeframe === 'month' ? 'white' : 'var(--text-muted)', transition: 'all 0.2s' }}
+                                >
+                                    This Month
+                                </button>
+                            </div>
+                        </div>
+                        <div style={{ minHeight: '250px', width: '100%', position: 'relative' }}>
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+                                <SalesLineChart data={getChartData()} />
                             </div>
                         </div>
                     </section>

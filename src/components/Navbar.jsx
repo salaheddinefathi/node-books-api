@@ -45,9 +45,6 @@ const Navbar = () => {
                             {user && <Link to="/my-orders" className="nav-link" onClick={() => setIsMenuOpen(false)}>My Orders</Link>}
                             {user && user.role === 'admin' && <Link to="/admin" className="nav-link" onClick={() => setIsMenuOpen(false)}>Admin Dashboard</Link>}
 
-                            <div className="mobile-menu-footer">
-                                <p>© 2026 LuminaBooks</p>
-                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>

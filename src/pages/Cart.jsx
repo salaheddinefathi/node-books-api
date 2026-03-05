@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { AlertCircle, Terminal, Info } from 'lucide-react';
+import API_BASE_URL from '../config/api';
 import './Cart.css';
 
 const CustomStockError = ({ items, backendUrl, toastId }) => (
@@ -51,7 +52,6 @@ const Cart = () => {
     const navigate = useNavigate();
 
     const WHATSAPP_NUMBER = "212777725652";
-    const PUBLIC_BACKEND_URL = "http://localhost:5000";
 
     useEffect(() => {
         fetchSettings();
@@ -59,7 +59,7 @@ const Cart = () => {
 
     const fetchSettings = async () => {
         try {
-            const res = await fetch(`${PUBLIC_BACKEND_URL}/api/settings`);
+            const res = await fetch(`${API_BASE_URL}/api/settings`);
             if (res.ok) {
                 const data = await res.json();
                 setSettings(prev => ({ ...prev, ...data }));
@@ -93,7 +93,7 @@ const Cart = () => {
                 ``,
                 `🛒 *Books Ordered:*`,
                 ...cart.map((item, index) => {
-                    const itemImageUrl = item.cover.startsWith('http') ? item.cover : `${PUBLIC_BACKEND_URL}${item.cover}`;
+                    const itemImageUrl = item.cover.startsWith('http') ? item.cover : `${API_BASE_URL}${item.cover}`;
                     return `*${index + 1}. ${item.title}*\n   - Quantity: ${item.quantity}\n   - Price: $${(item.price * item.quantity).toFixed(2)}\n   - Cover: ${itemImageUrl}\n`;
                 }),
                 `---------------------------`,
@@ -119,7 +119,7 @@ const Cart = () => {
         try {
             // Save order to backend
             const token = localStorage.getItem('userToken');
-            const res = await fetch(`${PUBLIC_BACKEND_URL}/api/orders`, {
+            const res = await fetch(`${API_BASE_URL}/api/orders`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -254,7 +254,7 @@ const Cart = () => {
                             >
                                 <div className="item-image">
                                     <img
-                                        src={item.cover.startsWith('http') ? item.cover : `${PUBLIC_BACKEND_URL}${item.cover}`}
+                                        src={item.cover.startsWith('http') ? item.cover : `${API_BASE_URL}${item.cover}`}
                                         alt={item.title}
                                     />
                                 </div>

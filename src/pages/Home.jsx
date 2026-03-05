@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Star, ArrowUpRight, ShoppingCart, BookOpen } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
+import API_BASE_URL from '../config/api';
 import './Home.css';
+import Services from '../components/Services';
 
 const Home = () => {
     const { addToCart } = useCart();
@@ -31,7 +33,7 @@ const Home = () => {
     };
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/books')
+        fetch(`${API_BASE_URL}/api/books`)
             .then(res => {
                 if (!res.ok) throw new Error('API Unavailable');
                 return res.json();
@@ -147,7 +149,7 @@ const Home = () => {
                             <Link to={`/book/${book._id}`}>
                                 <div className="book-cover">
                                     <img
-                                        src={book.cover.startsWith('http') ? book.cover : `http://localhost:5000${book.cover}`}
+                                        src={book.cover.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
                                         alt={book.title}
                                     />
                                     <div className="card-overlay" onClick={(e) => handleQuickAdd(e, book)}>
@@ -173,6 +175,8 @@ const Home = () => {
                     ))}
                 </div>
             </section>
+
+            <Services />
         </div>
     );
 };
