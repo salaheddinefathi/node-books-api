@@ -54,12 +54,12 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 const settingRoutes = require('./routes/settingRoutes');
 
 // Routes
-app.use('/api/books', bookRoutes);
-app.use('/api/auth', authRoutes); // Admin auth
-app.use('/api/users', userRoutes); // User auth
-app.use('/api/orders', orderRoutes); // Orders
-app.use('/api/analytics', analyticsRoutes); // Business Analytics
-app.use('/api/settings', settingRoutes); // Global settings
+app.use('/api/books', checkDB, bookRoutes);
+app.use('/api/auth', checkDB, authRoutes); // Admin auth
+app.use('/api/users', checkDB, userRoutes); // User auth
+app.use('/api/orders', checkDB, orderRoutes); // Orders
+app.use('/api/analytics', checkDB, analyticsRoutes); // Business Analytics
+app.use('/api/settings', checkDB, settingRoutes); // Global settings
 
 app.get('/', (req, res) => {
     res.send('LuminaBooks API is running (CORS FIX V2)');

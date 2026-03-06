@@ -9,10 +9,15 @@ const authMiddleware = async (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = { id: decoded.id, role: decoded.role };
-        req.adminId = decoded.id; // backward compatibility
+        req.adminId = decoded.id;
         next();
     } catch (error) {
-        res.status(401).json({ message: 'Token is not valid' });
+        console.error('Auth Middleware Error:', error.name, error.message);
+        const status = error.name === 'TokenExpiredError' ? 401 : 401;
+        res.status(status).json({
+            message: error.name === 'TokenExpiredError' ? 'Token expired' : 'Invalid token',
+            error: error.message
+        });
     }
 };
 

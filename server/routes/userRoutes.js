@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 // Helper to generate User ID
@@ -14,16 +15,19 @@ router.post('/register', async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
 
+        if (!name || !email || !password || !phone) {
+            return res.status(400).json({ message: 'All fields are required (name, email, phone, password)' });
+        }
+
         // Check if user exists
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ message: 'User already exists with this email' });
 
-        // Hash password manually before saving
-        const bcrypt = require('bcryptjs');
+        // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Create user with custom ID
+        // Create user
         user = new User({
             userId: generateUserId(),
             name,
@@ -32,13 +36,17 @@ router.post('/register', async (req, res) => {
             password: hashedPassword
         });
 
-        console.log('Attempting to save user:', email);
+        console.log('Registering user:', email);
         await user.save();
-        console.log('User saved successfully');
+
+        if (!process.env.JWT_SECRET) {
+            console.error('CRITICAL: JWT_SECRET is not defined in environment variables');
+            return res.status(500).json({ message: 'Server configuration error (JWT)' });
+        }
 
         // Create token
         const token = jwt.sign(
-            { id: user._id, role: user.role },
+            { id: user._id, role: user.role || 'user' },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -51,12 +59,16 @@ router.post('/register', async (req, res) => {
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
-                role: user.role
+                role: user.role || 'user'
             }
         });
     } catch (err) {
         console.error('Registration Error:', err);
-        res.status(500).json({ message: 'Server error during registration', error: err.message });
+        res.status(500).json({
+            message: 'Server error during registration',
+            error: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
     }
 });
 
@@ -73,6 +85,11 @@ router.post('/login', async (req, res) => {
         // Check password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+
+        if (!process.env.JWT_SECRET) {
+            console.error('CRITICAL: JWT_SECRET is not defined in environment variables');
+            return res.status(500).json({ message: 'Server configuration error (JWT)' });
+        }
 
         // Create token
         const token = jwt.sign(
