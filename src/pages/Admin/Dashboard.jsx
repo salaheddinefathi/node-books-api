@@ -853,7 +853,7 @@ const Dashboard = () => {
                                         border: '1px solid var(--border)'
                                     }}>
                                         <img
-                                            src={item.cover?.startsWith('http') ? item.cover : `${PUBLIC_BACKEND_URL}${item.cover}`}
+                                            src={item.cover?.startsWith('http') ? item.cover : `${API_BASE_URL}${item.cover}`}
                                             alt={item.title}
                                             style={{ width: '60px', height: '80px', borderRadius: '6px', objectFit: 'cover' }}
                                         />

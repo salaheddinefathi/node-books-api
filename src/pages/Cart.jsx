@@ -179,7 +179,7 @@ const Cart = () => {
                                     40%, 60% { transform: translate3d(4px, 0, 0); }
                                 }
                             `}</style>
-                            <CustomStockError items={data.items} backendUrl={PUBLIC_BACKEND_URL} toastId={t.id} />
+                            <CustomStockError items={data.items} backendUrl={API_BASE_URL} toastId={t.id} />
                         </div>
                     ), {
                         id: 'stock-error',
