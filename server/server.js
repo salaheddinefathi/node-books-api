@@ -40,7 +40,7 @@ app.use((req, res, next) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/bookstor';
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/bookstor';
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ Connected to MongoDB Successfully'))
