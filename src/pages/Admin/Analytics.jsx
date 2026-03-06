@@ -42,7 +42,7 @@ const Analytics = () => {
 
     const fetchAnalytics = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
+            const token = localStorage.getItem('lumina_auth_token');
             const res = await fetch(`${API_BASE_URL}/api/analytics`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -82,7 +82,7 @@ const Analytics = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('adminToken');
+        localStorage.removeItem('lumina_auth_token');
         window.location.href = '/';
     };
 

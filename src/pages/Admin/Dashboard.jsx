@@ -63,14 +63,14 @@ const Dashboard = () => {
     const fetchOrders = async () => {
         setOrdersLoading(true);
         try {
-            const token = localStorage.getItem('adminToken');
+            const token = localStorage.getItem('lumina_auth_token');
             const res = await fetch(`${API_BASE_URL}/api/orders`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (res.status === 401 || res.status === 403) {
                 console.log('Admin access issue - Redirecting to login');
-                localStorage.removeItem('adminToken');
+                localStorage.removeItem('lumina_auth_token');
                 window.location.href = '/admin/login';
                 return;
             }
@@ -136,7 +136,7 @@ const Dashboard = () => {
     const handleUpdateSettings = async (updates) => {
         setIsSavingSettings(true);
         try {
-            const token = localStorage.getItem('adminToken');
+            const token = localStorage.getItem('lumina_auth_token');
             const res = await fetch(`${API_BASE_URL}/api/settings`, {
                 method: 'PUT',
                 headers: {
@@ -157,7 +157,7 @@ const Dashboard = () => {
 
     const handleInlineUpdate = async (id, updates) => {
         try {
-            const token = localStorage.getItem('adminToken');
+            const token = localStorage.getItem('lumina_auth_token');
             const res = await fetch(`${API_BASE_URL}/api/books/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -186,7 +186,7 @@ const Dashboard = () => {
             const data = await res.json();
 
             if (res.status === 401 || res.status === 403) {
-                localStorage.removeItem('adminToken');
+                localStorage.removeItem('lumina_auth_token');
                 window.location.href = '/admin/login';
                 return;
             }
@@ -205,7 +205,7 @@ const Dashboard = () => {
 
     const updateOrderStatus = async (id, newStatus) => {
         try {
-            const token = localStorage.getItem('adminToken');
+            const token = localStorage.getItem('lumina_auth_token');
             const res = await fetch(`${API_BASE_URL}/api/orders/${id}/status`, {
                 method: 'PUT',
                 headers: {
@@ -241,7 +241,7 @@ const Dashboard = () => {
         }
 
         try {
-            const token = localStorage.getItem('adminToken');
+            const token = localStorage.getItem('lumina_auth_token');
             const res = await fetch(`${API_BASE_URL}/api/books`, {
                 method: 'POST',
                 headers: {
@@ -250,7 +250,7 @@ const Dashboard = () => {
                 body: data
             });
             if (res.status === 401) {
-                localStorage.removeItem('adminToken');
+                localStorage.removeItem('lumina_auth_token');
                 window.location.href = '/admin/login';
                 return;
             }
@@ -276,7 +276,7 @@ const Dashboard = () => {
         setIsDeleting(true);
         console.log('Attempting to delete book with ID:', bookToDelete);
         try {
-            const token = localStorage.getItem('adminToken');
+            const token = localStorage.getItem('lumina_auth_token');
             const res = await fetch(`${API_BASE_URL}/api/books/${bookToDelete}`, {
                 method: 'DELETE',
                 headers: {
@@ -304,7 +304,7 @@ const Dashboard = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('adminToken');
+        localStorage.removeItem('lumina_auth_token');
         localStorage.removeItem('adminUser');
         window.location.href = '/';
     };

@@ -23,7 +23,7 @@ const MyOrders = () => {
     useEffect(() => {
         const fetchMyOrders = async () => {
             try {
-                const token = localStorage.getItem('userToken');
+                const token = localStorage.getItem('lumina_auth_token');
                 const res = await fetch(`${API_BASE_URL}/api/orders/my`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });

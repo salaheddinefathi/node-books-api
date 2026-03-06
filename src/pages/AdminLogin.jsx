@@ -21,7 +21,7 @@ const AdminLogin = () => {
 
         try {
             const response = await axios.post(`${API_BASE_URL}/api/auth/login`, credentials);
-            localStorage.setItem('adminToken', response.data.token);
+            localStorage.setItem('lumina_auth_token', response.data.token);
             localStorage.setItem('adminUser', response.data.username);
             toast.success('Admin access granted', {
                 style: {

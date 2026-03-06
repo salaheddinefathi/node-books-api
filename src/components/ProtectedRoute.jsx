@@ -5,7 +5,7 @@ import API_BASE_URL from '../config/api';
 
 const ProtectedRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem('lumina_auth_token');
 
     useEffect(() => {
         const verifyToken = async () => {
@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children }) => {
             } catch (error) {
                 console.error('Token verification failed:', error);
                 setIsAuthenticated(false);
-                localStorage.removeItem('adminToken');
+                localStorage.removeItem('lumina_auth_token');
             }
         };
 

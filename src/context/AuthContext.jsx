@@ -8,7 +8,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('userToken'));
+    const [token, setToken] = useState(localStorage.getItem('lumina_auth_token'));
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (userData) => {
         const res = await axios.post(`${API_BASE_URL}/api/users/register`, userData);
-        localStorage.setItem('userToken', res.data.token);
+        localStorage.setItem('lumina_auth_token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
         setToken(res.data.token);
         setUser(res.data.user);
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (userData) => {
         const res = await axios.post(`${API_BASE_URL}/api/users/login`, userData);
-        localStorage.setItem('userToken', res.data.token);
+        localStorage.setItem('lumina_auth_token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
         setToken(res.data.token);
         setUser(res.data.user);
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        localStorage.removeItem('userToken');
+        localStorage.removeItem('lumina_auth_token');
         localStorage.removeItem('user');
         setToken(null);
         setUser(null);

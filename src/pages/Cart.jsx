@@ -118,7 +118,7 @@ const Cart = () => {
 
         try {
             // Save order to backend
-            const token = localStorage.getItem('userToken');
+            const token = localStorage.getItem('lumina_auth_token');
             const res = await fetch(`${API_BASE_URL}/api/orders`, {
                 method: 'POST',
                 headers: {
