@@ -17,25 +17,10 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Middleware
 app.use(cors({
-    origin: function (origin, callback) {
-        const allowedOrigins = [
-            'http://localhost:5173',
-            'http://localhost:3000',
-            'https://node-books-api-ekwm.vercel.app', // Explicitly allow current frontend
-            process.env.FRONTEND_URL?.trim()
-        ].filter(Boolean);
-
-        // Allow requests with no origin (like mobile apps) or if it's in the allowed list
-        if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-            callback(null, true);
-        } else {
-            console.log('Origin checked by CORS:', origin);
-            callback(null, true); // Still allow but log for debugging
-        }
-    },
+    origin: true, // Reflect the requesting origin (Safe for credentials:true)
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
 app.use(express.json());
 app.use((req, res, next) => {
@@ -77,7 +62,7 @@ app.use('/api/analytics', analyticsRoutes); // Business Analytics
 app.use('/api/settings', settingRoutes); // Global settings
 
 app.get('/', (req, res) => {
-    res.send('LuminaBooks API is running (latest version)');
+    res.send('LuminaBooks API is running (CORS FIX V2)');
 });
 
 app.listen(PORT, '0.0.0.0', () => {
