@@ -21,20 +21,21 @@ app.use(cors({
         const allowedOrigins = [
             'http://localhost:5173',
             'http://localhost:3000',
+            'https://node-books-api-ekwm.vercel.app', // Explicitly allow current frontend
             process.env.FRONTEND_URL?.trim()
         ].filter(Boolean);
 
-        // Allow requests with no origin (like mobile apps)
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Allow requests with no origin (like mobile apps) or if it's in the allowed list
+        if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
             callback(null, true);
         } else {
-            // For production, if it's still failing, we can temporarily allow it
-            // but for now, let's log it to help debugging
-            console.log('Origin blocked by CORS:', origin);
-            callback(null, true); // Temporarily allow to bypass the 502/CORS loop
+            console.log('Origin checked by CORS:', origin);
+            callback(null, true); // Still allow but log for debugging
         }
     },
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use((req, res, next) => {
