@@ -17,10 +17,10 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Middleware
 app.use(cors({
-    origin: true, // Reflect the requesting origin (Safe for credentials:true)
+    origin: ['https://node-books-api-ekwm.vercel.app', 'http://localhost:5173', 'http://localhost:3000'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use((req, res, next) => {
