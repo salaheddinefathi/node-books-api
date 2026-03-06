@@ -79,6 +79,7 @@ app.get('/', (req, res) => {
     res.send('LuminaBooks API is running (latest version)');
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📡 Deployment Environment: ${process.env.NODE_ENV || 'production'}`);
 });
