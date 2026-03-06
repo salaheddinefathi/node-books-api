@@ -16,8 +16,25 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Middleware
+const allowedOrigins = [
+    'https://node-books-api-ekwm.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000'
+];
+
 app.use(cors({
-    origin: ['https://node-books-api-ekwm.vercel.app', 'http://localhost:5173', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+        // Allow requests with no origin (e.g. curl, Postman, mobile apps)
+        if (!origin) return callback(null, true);
+        // Allow any Vercel preview/branch deployment for this project
+        if (
+            allowedOrigins.includes(origin) ||
+            /^https:\/\/node-books-api-ekwm[a-z0-9-]*\.vercel\.app$/.test(origin)
+        ) {
+            return callback(null, true);
+        }
+        return callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
