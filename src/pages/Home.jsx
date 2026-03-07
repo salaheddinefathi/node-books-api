@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Star, ArrowUpRight, ShoppingCart, BookOpen } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { ArrowRight, Star, ArrowUpRight, ShoppingCart, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
 import API_BASE_URL from '../config/api';
 import './Home.css';
 import Services from '../components/Services';
+import heroImg from '../assets/hero.png';
 
 const Home = () => {
+    const location = useLocation();
     const { addToCart } = useCart();
     const [books, setBooks] = useState([]);
     const [error, setError] = useState(null);
+
+    // Helper to chunk books into rows
+    const chunkBooks = (arr, size) => {
+        return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+            arr.slice(i * size, i * size + size)
+        );
+    };
 
     const handleQuickAdd = (e, book) => {
         e.preventDefault();
@@ -62,7 +71,58 @@ const Home = () => {
                             <span className="hero-badge-text">500+ NEW TITLES</span>
                         </div>
 
-                        <h1>Read Something <span>Extraordinary</span> Today</h1>
+                        <motion.h1
+                            variants={{
+                                visible: { transition: { staggerChildren: 0.1 } }
+                            }}
+                            initial="hidden"
+                            animate="visible"
+                            className="typewriter-headline"
+                        >
+                            {"Read Something ".split("").map((char, index) => (
+                                <motion.span
+                                    key={index}
+                                    variants={{
+                                        hidden: { opacity: 0, display: "none" },
+                                        visible: { opacity: 1, display: "inline" }
+                                    }}
+                                >
+                                    {char}
+                                </motion.span>
+                            ))}
+                            <span className="extrawriter">
+                                {"Extraordinary".split("").map((char, index) => (
+                                    <motion.span
+                                        key={index}
+                                        className="extraordinary-text"
+                                        variants={{
+                                            hidden: { opacity: 0, display: "none" },
+                                            visible: { opacity: 1, display: "inline" }
+                                        }}
+                                    >
+                                        {char}
+                                    </motion.span>
+                                ))}
+                            </span>
+                            {" Today".split("").map((char, index) => (
+                                <motion.span
+                                    key={index}
+                                    variants={{
+                                        hidden: { opacity: 0, display: "none" },
+                                        visible: { opacity: 1, display: "inline" }
+                                    }}
+                                >
+                                    {char}
+                                </motion.span>
+                            ))}
+                            <motion.span
+                                className="typing-cursor"
+                                animate={{ opacity: [1, 0] }}
+                                transition={{ repeat: Infinity, duration: 0.8 }}
+                            >
+                                |
+                            </motion.span>
+                        </motion.h1>
 
                         <p className="hero-description">
                             Step into a world of curated literature where every page tells a story worth remembering. From hidden gems to global bestsellers.
@@ -101,8 +161,8 @@ const Home = () => {
                     >
                         <div className="hero-image-wrapper">
                             <img
-                                src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800"
-                                alt="Books Collection"
+                                src={heroImg}
+                                alt="Young man reading a book in library"
                                 className="main-hero-img"
                             />
                             <div className="floating-card card-1">
@@ -136,47 +196,83 @@ const Home = () => {
                     </Link>
                 </div>
 
-                <div className="books-grid">
-                    {books.map((book, index) => (
-                        <motion.div
-                            key={book._id || index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="book-card"
-                        >
-                            <Link to={`/book/${book._id}`}>
-                                <div className="book-cover">
-                                    <img
-                                        src={book.cover.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
-                                        alt={book.title}
-                                    />
-                                    <div className="card-overlay" onClick={(e) => handleQuickAdd(e, book)}>
-                                        <button className="add-to-cart">
-                                            <ShoppingCart size={18} /> Add to Cart
-                                        </button>
-                                    </div>
-                                    <div className="category-tag">{book.category}</div>
-                                </div>
-                                <div className="book-info">
-                                    <h3>{book.title}</h3>
-                                    <p className="author">{book.author}</p>
-                                    <div className="book-footer">
-                                        <span className="price">${book.price}</span>
-                                        <div className="rating">
-                                            <Star size={14} fill="#f59e0b" color="#f59e0b" />
-                                            <span>{book.rating || 4.5}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-                        </motion.div>
+                <div className="books-rows">
+                    {chunkBooks(books, 10).map((rowBooks, rowIndex) => (
+                        <BookRow
+                            key={rowIndex}
+                            books={rowBooks}
+                            handleQuickAdd={handleQuickAdd}
+                            API_BASE_URL={API_BASE_URL}
+                            location={location}
+                        />
                     ))}
                 </div>
             </section>
 
             <Services />
+        </div>
+    );
+};
+
+// Independent Row Component
+const BookRow = ({ books, handleQuickAdd, API_BASE_URL, location }) => {
+    const rowRef = React.useRef(null);
+
+    const scroll = (direction) => {
+        if (rowRef.current) {
+            const { scrollLeft, clientWidth } = rowRef.current;
+            const scrollAmount = clientWidth * 0.8;
+            const scrollTo = direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
+            rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+        }
+    };
+
+    return (
+        <div className="book-row-wrapper">
+            <button className="row-nav-btn prev pc-only" onClick={() => scroll('left')}>
+                <ChevronLeft size={24} />
+            </button>
+            <div className="books-grid" ref={rowRef}>
+                {books.map((book, index) => (
+                    <motion.div
+                        key={book._id || index}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        className="book-card"
+                    >
+                        <Link to={`/book/${book._id}`} state={{ backgroundLocation: location }}>
+                            <div className="book-cover">
+                                <img
+                                    src={book.cover.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
+                                    alt={book.title}
+                                />
+                                <div className="card-overlay">
+                                    <button className="add-to-cart">
+                                        <BookOpen size={18} /> View Details
+                                    </button>
+                                </div>
+                                <div className="category-tag">{book.category}</div>
+                            </div>
+                            <div className="book-info">
+                                <h3>{book.title}</h3>
+                                <p className="author">{book.author}</p>
+                                <div className="book-footer">
+                                    <span className="price">${book.price}</span>
+                                    <div className="rating">
+                                        <Star size={14} fill="#f59e0b" color="#f59e0b" />
+                                        <span>{book.rating || 4.5}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+                    </motion.div>
+                ))}
+            </div>
+            <button className="row-nav-btn next pc-only" onClick={() => scroll('right')}>
+                <ChevronRight size={24} />
+            </button>
         </div>
     );
 };

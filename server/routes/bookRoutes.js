@@ -106,15 +106,19 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 // @route   PUT /api/books/:id
-// @desc    Update book details (price and stock)
+// @desc    Update book details
 router.put('/:id', auth, async (req, res) => {
-    const { price, stock } = req.body;
+    const { title, author, price, category, stock, description } = req.body;
     try {
         const book = await Book.findById(req.params.id);
         if (!book) return res.status(404).json({ message: 'Book not found' });
 
+        if (title !== undefined) book.title = title;
+        if (author !== undefined) book.author = author;
         if (price !== undefined) book.price = price;
+        if (category !== undefined) book.category = category;
         if (stock !== undefined) book.stock = stock;
+        if (description !== undefined) book.description = description;
 
         await book.save();
         res.json(book);

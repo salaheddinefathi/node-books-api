@@ -1,0 +1,23 @@
+.admin-layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+.admin-content-main {
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .admin-layout-wrapper {
+        flex-direction: column;
+    }
+
+    .admin-content-main {
+        padding-bottom: 80px;
+        /* Space for mobile nav if any */
+    }
+}

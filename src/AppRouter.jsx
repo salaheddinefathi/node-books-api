@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Auth/Login';
 import SignUp from './pages/Auth/SignUp';
@@ -12,78 +12,67 @@ import MyOrders from './pages/MyOrders';
 import Analytics from './pages/Admin/Analytics';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
+import { AnimatePresence } from 'framer-motion';
+
+import AdminLayout from './components/Admin/AdminLayout';
+
+const NavigationRoutes = () => {
+    const location = useLocation();
+    const backgroundLocation = location.state?.backgroundLocation;
+    const isAdmin = location.pathname.startsWith('/admin');
+
+    if (isAdmin) {
+        return (
+            <AdminLayout>
+                <Routes>
+                    <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                    <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="*" element={<Navigate to="/admin" replace />} />
+                </Routes>
+            </AdminLayout>
+        );
+    }
+
+    return (
+        <div className="app-content">
+            <Navbar />
+            <main>
+                <AnimatePresence mode="wait">
+                    <Routes location={backgroundLocation || location}>
+                        {/* Main Routes */}
+                        <Route path="/" element={<Home />} />
+                        <Route path="/catalog" element={<Catalog />} />
+                        <Route path="/book/:id" element={<BookDetails />} />
+                        <Route path="/cart" element={<Cart />} />
+                        <Route path="/my-orders" element={<MyOrders />} />
+
+                        {/* Auth */}
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/signup" element={<SignUp />} />
+
+                        {/* Fallback */}
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                </AnimatePresence>
+
+                {/* Modal Route (The Bottom Sheet Overlay) */}
+                <AnimatePresence>
+                    {backgroundLocation && (
+                        <Routes location={location} key={location.pathname}>
+                            <Route path="/book/:id" element={<BookDetails />} />
+                        </Routes>
+                    )}
+                </AnimatePresence>
+            </main>
+        </div>
+    );
+};
 
 const AppRouter = () => {
     return (
         <Router>
-            <Routes>
-                <Route path="/admin/analytics" element={
-                    <ProtectedRoute>
-                        <Analytics />
-                    </ProtectedRoute>
-                } />
-                {/* Main Route with Home */}
-                <Route path="/" element={
-                    <>
-                        <Navbar />
-                        <main>
-                            <Home />
-                        </main>
-                    </>
-                } />
-
-                <Route path="/catalog" element={
-                    <>
-                        <Navbar />
-                        <main>
-                            <Catalog />
-                        </main>
-                    </>
-                } />
-
-                <Route path="/book/:id" element={
-                    <>
-                        <Navbar />
-                        <main>
-                            <BookDetails />
-                        </main>
-                    </>
-                } />
-
-                <Route path="/cart" element={
-                    <>
-                        <Navbar />
-                        <main>
-                            <Cart />
-                        </main>
-                    </>
-                } />
-
-                {/* Auth Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<SignUp />} />
-
-                {/* My Orders */}
-                <Route path="/my-orders" element={
-                    <>
-                        <Navbar />
-                        <main>
-                            <MyOrders />
-                        </main>
-                    </>
-                } />
-
-                {/* Admin Routes */}
-                <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/admin" element={
-                    <ProtectedRoute>
-                        <Dashboard />
-                    </ProtectedRoute>
-                } />
-
-                {/* Fallback to Home */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+            <NavigationRoutes />
         </Router>
     );
 };

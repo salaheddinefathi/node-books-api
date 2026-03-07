@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, X, LogIn, UserPlus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -45,6 +45,7 @@ const CustomStockError = ({ items, backendUrl, toastId }) => (
 );
 
 const Cart = () => {
+    const location = useLocation();
     const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
     const { user } = useAuth();
     const [settings, setSettings] = useState({ shippingCost: 0 });
@@ -260,7 +261,7 @@ const Cart = () => {
                                 </div>
                                 <div className="item-details">
                                     <div className="item-main">
-                                        <Link to={`/book/${item._id}`}>
+                                        <Link to={`/book/${item._id}`} state={{ backgroundLocation: location }}>
                                             <h3>{item.title}</h3>
                                         </Link>
                                         <p className="item-author">By {item.author}</p>

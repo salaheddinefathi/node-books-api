@@ -26,10 +26,24 @@ import toast from 'react-hot-toast';
 import API_BASE_URL from '../../config/api';
 import './Admin.css';
 
+import { useSearchParams } from 'react-router-dom';
+
 const Dashboard = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const tabParam = searchParams.get('tab') || 'dashboard';
+
     const [books, setBooks] = useState([]);
-    const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'library', or 'orders'
+    const [activeTab, setActiveTab] = useState(tabParam);
     const [showModal, setShowModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [bookToDelete, setBookToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [formData, setFormData] = useState({ title: '', author: '', price: '', category: 'Fiction', stock: '', description: '' });
+    const [coverFile, setCoverFile] = useState(null);
+
+    useEffect(() => {
+        setActiveTab(tabParam);
+    }, [tabParam]);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -94,19 +108,6 @@ const Dashboard = () => {
             order.items.some(item => item.title.toLowerCase().includes(searchLower));
         return matchesStatus && matchesSearch;
     });
-
-    const [formData, setFormData] = useState({
-        title: '',
-        author: '',
-        price: '',
-        category: 'Fiction',
-        stock: '',
-        description: ''
-    });
-    const [coverFile, setCoverFile] = useState(null);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [bookToDelete, setBookToDelete] = useState(null);
-    const [isDeleting, setIsDeleting] = useState(false);
 
     const stats = [
         { label: "Total Books", value: books.length, icon: Library, color: "#4f46e5" },
@@ -310,401 +311,393 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="admin-container">
-            {/* Sidebar */}
-            <aside className={`admin-sidebar ${!isVisible ? 'nav-hidden' : ''}`}>
-                <div className="sidebar-header">
-                    <BookPlus size={24} className="sidebar-logo" />
-                    <span>Admin <span>Portal</span></span>
-                </div>
-                <nav className="sidebar-nav">
-                    <button onClick={() => setActiveTab('dashboard')} className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}>
-                        <LayoutDashboard size={20} /><span>Dashboard</span>
-                    </button>
-                    <button onClick={() => setActiveTab('library')} className={`nav-item ${activeTab === 'library' ? 'active' : ''}`}>
-                        <Library size={20} /><span>Books</span>
-                    </button>
-                    <button onClick={() => setActiveTab('orders')} className={`nav-item ${activeTab === 'orders' ? 'active' : ''}`}>
-                        <ShoppingBag size={20} /><span>Orders</span>
-                    </button>
-                    <a href="/admin/analytics" className="nav-item">
-                        <BarChart3 size={20} /><span>Analytics</span>
-                    </a>
-                    <button className="nav-item">
-                        <Users size={20} /><span>Clients</span>
-                    </button>
-                    <div className="nav-divider"></div>
-                    <button className="nav-item">
-                        <Settings size={20} /><span>Settings</span>
-                    </button>
-                    <button onClick={handleLogout} className="nav-item logout">
-                        <LogOut size={20} /><span>Logout</span>
-                    </button>
-                    <div className="nav-divider hide-mobile"></div>
-                    <a href="/" className="nav-item home-link">
-                        <Home size={20} /><span>Back to Site</span>
-                    </a>
-                </nav>
-            </aside>
+        <div className="admin-main">
+            {activeTab === 'dashboard' && (
+                <>
+                    <header className="admin-header">
+                        <div>
+                            <h1>Overview</h1>
+                            <p>Welcome back, Admin</p>
+                        </div>
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="add-book-btn"
+                            onClick={() => setShowModal(true)}
+                        >
+                            <Plus size={20} /> Add New Book
+                        </motion.button>
+                    </header>
 
-            <main className="admin-main">
-                {activeTab === 'dashboard' && (
-                    <>
-                        <header className="admin-header">
-                            <div>
-                                <h1>Overview</h1>
-                                <p>Welcome back, Admin</p>
-                            </div>
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="add-book-btn"
-                                onClick={() => setShowModal(true)}
-                            >
-                                <Plus size={20} /> Add New Book
-                            </motion.button>
-                        </header>
+                    <div className="stats-grid">
+                        {stats.map((stat, index) => (
+                            <motion.div key={index} className="stat-card">
+                                <div className="stat-icon" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
+                                    <stat.icon size={24} />
+                                </div>
+                                <div className="stat-info">
+                                    <h3>{stat.value}</h3>
+                                    <p>{stat.label}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
 
-                        <div className="stats-grid">
-                            {stats.map((stat, index) => (
-                                <motion.div key={index} className="stat-card">
-                                    <div className="stat-icon" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
-                                        <stat.icon size={24} />
-                                    </div>
-                                    <div className="stat-info">
-                                        <h3>{stat.value}</h3>
-                                        <p>{stat.label}</p>
-                                    </div>
-                                </motion.div>
-                            ))}
+                    <section className="admin-section">
+                        <div className="section-title">
+                            <h2>Recent Order Activity</h2>
+                            <button className="text-btn" onClick={() => setSearchParams({ tab: 'orders' })}>View All Orders</button>
+                        </div>
+                        <div className="table-container">
+                            <table className="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orders.slice(0, 5).map((order) => (
+                                        <tr key={order._id}>
+                                            <td><span style={{ fontWeight: 600 }}>{order.orderNumber}</span></td>
+                                            <td>{order.customerName}</td>
+                                            <td>
+                                                <span className={`table-badge status-${order.status}`} style={{
+                                                    backgroundColor: order.status === 'confirmed' ? 'rgba(16, 185, 129, 0.1)' :
+                                                        order.status === 'cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                                                    color: order.status === 'confirmed' ? '#10b981' :
+                                                        order.status === 'cancelled' ? '#ef4444' : '#f59e0b',
+                                                    border: 'none',
+                                                    padding: '0.4rem 0.8rem',
+                                                    borderRadius: '20px'
+                                                }}>
+                                                    {order.status}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button className="text-btn" onClick={() => { setSelectedOrder(order); }}>Details</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </>
+            )}
+
+            {activeTab === 'library' && (
+                <>
+                    <header className="admin-header">
+                        <div>
+                            <h1>Book Library</h1>
+                            <p>Manage your inventory and stock levels</p>
+                        </div>
+                        <button className="add-book-btn" onClick={() => setShowModal(true)}>
+                            <Plus size={20} /> Add New Book
+                        </button>
+                    </header>
+
+                    <section className="admin-section">
+                        <div className="section-title">
+                            <h2>All Books</h2>
+                            <button className="text-btn" onClick={fetchBooks}>Refresh List</button>
                         </div>
 
-                        <section className="admin-section">
-                            <div className="section-title">
-                                <h2>Recent Order Activity</h2>
-                                <button className="text-btn" onClick={() => setActiveTab('orders')}>View All Orders</button>
-                            </div>
-                            <div className="table-container">
-                                <table className="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Order ID</th>
-                                            <th>Customer</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {orders.slice(0, 5).map((order) => (
-                                            <tr key={order._id}>
-                                                <td><span style={{ fontWeight: 600 }}>{order.orderNumber}</span></td>
-                                                <td>{order.customerName}</td>
-                                                <td>
-                                                    <span className={`table-badge status-${order.status}`} style={{
-                                                        backgroundColor: order.status === 'confirmed' ? 'rgba(16, 185, 129, 0.1)' :
-                                                            order.status === 'cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                                                        color: order.status === 'confirmed' ? '#10b981' :
-                                                            order.status === 'cancelled' ? '#ef4444' : '#f59e0b',
-                                                        border: 'none',
-                                                        padding: '0.4rem 0.8rem',
-                                                        borderRadius: '20px'
-                                                    }}>
-                                                        {order.status}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <button className="text-btn" onClick={() => { setSelectedOrder(order); }}>Details</button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
-                    </>
-                )}
-
-                {activeTab === 'library' && (
-                    <>
-                        <header className="admin-header">
-                            <div>
-                                <h1>Book Library</h1>
-                                <p>Manage your inventory and stock levels</p>
-                            </div>
-                            <button className="add-book-btn" onClick={() => setShowModal(true)}>
-                                <Plus size={20} /> Add New Book
-                            </button>
-                        </header>
-
-                        <section className="admin-section">
-                            <div className="section-title">
-                                <h2>All Books</h2>
-                                <button className="text-btn" onClick={fetchBooks}>Refresh List</button>
-                            </div>
-
-                            {/* Global Store Settings */}
-                            <div className="admin-settings-row" style={{
-                                display: 'flex',
-                                gap: '1.5rem',
-                                padding: '1.25rem',
-                                backgroundColor: 'var(--surface)',
-                                borderRadius: '16px',
-                                marginBottom: '1.5rem',
-                                border: '1px solid var(--border)',
-                                alignItems: 'center'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
-                                    <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(79, 70, 229, 0.1)', color: 'var(--primary)' }}>
-                                        <Truck size={20} />
-                                    </div>
-                                    <div>
-                                        <h3 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0 }}>Frais de Livraison (Global)</h3>
-                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>S'applique à toutes les nouvelles commandes</p>
-                                    </div>
+                        {/* Global Store Settings */}
+                        <div className="admin-settings-row" style={{
+                            display: 'flex',
+                            gap: '1.5rem',
+                            padding: '1.25rem',
+                            backgroundColor: 'var(--surface)',
+                            borderRadius: '16px',
+                            marginBottom: '1.5rem',
+                            border: '1px solid var(--border)',
+                            alignItems: 'center'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
+                                <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(79, 70, 229, 0.1)', color: 'var(--primary)' }}>
+                                    <Truck size={20} />
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                        <span style={{ position: 'absolute', left: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>$</span>
-                                        <input
-                                            type="number"
-                                            value={settings.shippingCost}
-                                            onChange={(e) => setSettings({ ...settings, shippingCost: e.target.value })}
-                                            style={{
-                                                padding: '0.6rem 0.6rem 0.6rem 1.75rem',
-                                                borderRadius: '10px',
-                                                border: '1px solid var(--border)',
-                                                backgroundColor: 'var(--bg-main)',
-                                                color: 'var(--text-main)',
-                                                width: '100px',
-                                                fontWeight: 700
-                                            }}
-                                        />
-                                    </div>
-                                    <button
-                                        className="add-book-btn"
-                                        style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem' }}
-                                        onClick={() => handleUpdateSettings({ shippingCost: parseFloat(settings.shippingCost) })}
-                                        disabled={isSavingSettings}
-                                    >
-                                        {isSavingSettings ? 'Saving...' : 'Mettre à jour'}
-                                    </button>
+                                <div>
+                                    <h3 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0 }}>Frais de Livraison (Global)</h3>
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>S'applique à toutes les nouvelles commandes</p>
                                 </div>
                             </div>
-                            <div className="table-container">
-                                <table className="admin-table">
-                                    <thead>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                    <span style={{ position: 'absolute', left: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>$</span>
+                                    <input
+                                        type="number"
+                                        value={settings.shippingCost}
+                                        onChange={(e) => setSettings({ ...settings, shippingCost: e.target.value })}
+                                        style={{
+                                            padding: '0.6rem 0.6rem 0.6rem 1.75rem',
+                                            borderRadius: '10px',
+                                            border: '1px solid var(--border)',
+                                            backgroundColor: 'var(--bg-main)',
+                                            color: 'var(--text-main)',
+                                            width: '100px',
+                                            fontWeight: 700
+                                        }}
+                                    />
+                                </div>
+                                <button
+                                    className="add-book-btn"
+                                    style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem' }}
+                                    onClick={() => handleUpdateSettings({ shippingCost: parseFloat(settings.shippingCost) })}
+                                    disabled={isSavingSettings}
+                                >
+                                    {isSavingSettings ? 'Saving...' : 'Mettre à jour'}
+                                </button>
+                            </div>
+                        </div>
+                        <div className="table-container">
+                            <table className="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Cover</th>
+                                        <th>Title</th>
+                                        <th className="hide-mobile">Author</th>
+                                        <th className="hide-mobile">Category</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {error ? (
                                         <tr>
-                                            <th>Cover</th>
-                                            <th>Title</th>
-                                            <th className="hide-mobile">Author</th>
-                                            <th className="hide-mobile">Category</th>
-                                            <th>Price</th>
-                                            <th>Stock</th>
-                                            <th>Actions</th>
+                                            <td colSpan="7" style={{ textAlign: 'center', padding: '3rem' }}>
+                                                <div style={{ color: '#ef4444', marginBottom: '1rem' }}>
+                                                    <strong>⚠️ Connection Error:</strong> {error}
+                                                </div>
+                                                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                                                    Check if your MongoDB Atlas URI is correct in <code>server/.env</code>
+                                                </p>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {error ? (
-                                            <tr>
-                                                <td colSpan="7" style={{ textAlign: 'center', padding: '3rem' }}>
-                                                    <div style={{ color: '#ef4444', marginBottom: '1rem' }}>
-                                                        <strong>⚠️ Connection Error:</strong> {error}
-                                                    </div>
-                                                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                                                        Check if your MongoDB Atlas URI is correct in <code>server/.env</code>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                        ) : books && books.length > 0 ? books.map((book) => (
-                                            <tr key={book._id}>
-                                                <td>
-                                                    <img
-                                                        src={book.cover?.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
-                                                        alt={book.title}
-                                                        style={{ width: '40px', height: '60px', borderRadius: '4px', objectFit: 'cover' }}
-                                                    />
-                                                </td>
-                                                <td><strong>{book.title}</strong></td>
-                                                <td className="hide-mobile">{book.author}</td>
-                                                <td className="hide-mobile"><span className="table-badge">{book.category}</span></td>
-                                                <td>
-                                                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                                        <span style={{ position: 'absolute', left: '8px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>$</span>
-                                                        <input
-                                                            type="number"
-                                                            defaultValue={book.price}
-                                                            onBlur={(e) => handleInlineUpdate(book._id, { price: parseFloat(e.target.value) })}
-                                                            style={{
-                                                                width: '70px',
-                                                                padding: '0.4rem 0.4rem 0.4rem 1.2rem',
-                                                                borderRadius: '8px',
-                                                                border: '1px solid var(--border)',
-                                                                backgroundColor: 'var(--bg-main)',
-                                                                color: 'var(--text-main)',
-                                                                fontSize: '0.85rem'
-                                                            }}
-                                                        />
-                                                    </div>
-                                                </td>
-                                                <td>
+                                    ) : books && books.length > 0 ? books.map((book) => (
+                                        <tr key={book._id}>
+                                            <td>
+                                                <img
+                                                    src={book.cover?.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
+                                                    alt={book.title}
+                                                    style={{ width: '40px', height: '60px', borderRadius: '4px', objectFit: 'cover' }}
+                                                />
+                                            </td>
+                                            <td><strong>{book.title}</strong></td>
+                                            <td className="hide-mobile">{book.author}</td>
+                                            <td className="hide-mobile">
+                                                <select
+                                                    defaultValue={book.category}
+                                                    onChange={(e) => handleInlineUpdate(book._id, { category: e.target.value })}
+                                                    style={{
+                                                        padding: '0.4rem',
+                                                        borderRadius: '8px',
+                                                        border: '1px solid var(--border)',
+                                                        backgroundColor: 'var(--bg-main)',
+                                                        color: 'var(--text-main)',
+                                                        fontSize: '0.85rem',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    <option>Fiction</option>
+                                                    <option>Non-Fiction</option>
+                                                    <option>Fantasy</option>
+                                                    <option>Mystery</option>
+                                                    <option>Sci-Fi</option>
+                                                    <option>Self-Help</option>
+                                                    <option>Biography</option>
+                                                    <option>History</option>
+                                                    <option>Programming</option>
+                                                    <option>Technology</option>
+                                                    <option>Psychology</option>
+                                                    <option>Business</option>
+                                                    <option>Romance</option>
+                                                    <option>Horror</option>
+                                                    <option>Manga</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                                    <span style={{ position: 'absolute', left: '8px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>$</span>
                                                     <input
                                                         type="number"
-                                                        defaultValue={book.stock}
-                                                        onBlur={(e) => handleInlineUpdate(book._id, { stock: parseInt(e.target.value) })}
+                                                        defaultValue={book.price}
+                                                        onBlur={(e) => handleInlineUpdate(book._id, { price: parseFloat(e.target.value) })}
                                                         style={{
-                                                            width: '60px',
-                                                            padding: '0.4rem',
+                                                            width: '70px',
+                                                            padding: '0.4rem 0.4rem 0.4rem 1.2rem',
                                                             borderRadius: '8px',
                                                             border: '1px solid var(--border)',
                                                             backgroundColor: 'var(--bg-main)',
-                                                            color: book.stock < 10 ? "#ef4444" : "var(--text-main)",
-                                                            fontWeight: book.stock < 10 ? 700 : 400,
+                                                            color: 'var(--text-main)',
                                                             fontSize: '0.85rem'
                                                         }}
                                                     />
-                                                </td>
-                                                <td>
-                                                    <button className="action-btn" onClick={() => openDeleteModal(book._id)} title="Delete">
-                                                        <Trash2 size={16} color="#ef4444" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        )) : (
-                                            <tr>
-                                                <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                                                    No books found. Check database connection.
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
-                    </>
-                )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="number"
+                                                    defaultValue={book.stock}
+                                                    onBlur={(e) => handleInlineUpdate(book._id, { stock: parseInt(e.target.value) })}
+                                                    style={{
+                                                        width: '60px',
+                                                        padding: '0.4rem',
+                                                        borderRadius: '8px',
+                                                        border: '1px solid var(--border)',
+                                                        backgroundColor: 'var(--bg-main)',
+                                                        color: book.stock < 10 ? "#ef4444" : "var(--text-main)",
+                                                        fontWeight: book.stock < 10 ? 700 : 400,
+                                                        fontSize: '0.85rem'
+                                                    }}
+                                                />
+                                            </td>
+                                            <td>
+                                                <button className="action-btn" onClick={() => openDeleteModal(book._id)} title="Delete">
+                                                    <Trash2 size={16} color="#ef4444" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                                                No books found. Check database connection.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </>
+            )}
 
-                {activeTab === 'orders' && (
-                    <>
-                        <header className="admin-header">
-                            <div>
-                                <h1>Order Management</h1>
-                                <p>Track and verify customer orders</p>
-                            </div>
-                            <button className="text-btn" onClick={fetchOrders} style={{ fontWeight: 700 }}>
-                                <Library size={16} /> Refresh Orders
-                            </button>
-                        </header>
+            {activeTab === 'orders' && (
+                <>
+                    <header className="admin-header">
+                        <div>
+                            <h1>Order Management</h1>
+                            <p>Track and verify customer orders</p>
+                        </div>
+                        <button className="text-btn" onClick={fetchOrders} style={{ fontWeight: 700 }}>
+                            <Library size={16} /> Refresh Orders
+                        </button>
+                    </header>
 
-                        <div className="orders-toolbar" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                            <div className="filter-tabs" style={{ display: 'flex', backgroundColor: 'var(--bg-main)', padding: '0.3rem', borderRadius: '12px', gap: '0.3rem' }}>
-                                {['all', 'pending', 'confirmed', 'cancelled'].map(status => (
-                                    <button
-                                        key={status}
-                                        onClick={() => setStatusFilter(status)}
-                                        className={`filter-tab ${statusFilter === status ? 'active' : ''}`}
-                                        style={{
-                                            padding: '0.5rem 1rem',
-                                            borderRadius: '10px',
-                                            border: 'none',
-                                            backgroundColor: statusFilter === status ? 'var(--primary)' : 'transparent',
-                                            color: statusFilter === status ? 'white' : 'var(--text-muted)',
-                                            cursor: 'pointer',
-                                            fontSize: '0.85rem',
-                                            textTransform: 'capitalize',
-                                            transition: 'all 0.2s'
-                                        }}
-                                    >
-                                        {status}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <div className="search-bar" style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
-                                <input
-                                    type="text"
-                                    placeholder="Search by customer or ID..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                    <div className="orders-toolbar" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div className="filter-tabs" style={{ display: 'flex', backgroundColor: 'var(--bg-main)', padding: '0.3rem', borderRadius: '12px', gap: '0.3rem' }}>
+                            {['all', 'pending', 'confirmed', 'cancelled'].map(status => (
+                                <button
+                                    key={status}
+                                    onClick={() => setStatusFilter(status)}
+                                    className={`filter-tab ${statusFilter === status ? 'active' : ''}`}
                                     style={{
-                                        width: '100%',
-                                        padding: '0.8rem 1rem',
-                                        borderRadius: '12px',
-                                        border: '1px solid var(--border)',
-                                        backgroundColor: 'var(--bg-main)',
-                                        color: 'var(--text-main)',
-                                        fontSize: '0.9rem'
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '10px',
+                                        border: 'none',
+                                        backgroundColor: statusFilter === status ? 'var(--primary)' : 'transparent',
+                                        color: statusFilter === status ? 'white' : 'var(--text-muted)',
+                                        cursor: 'pointer',
+                                        fontSize: '0.85rem',
+                                        textTransform: 'capitalize',
+                                        transition: 'all 0.2s'
                                     }}
-                                />
-                            </div>
+                                >
+                                    {status}
+                                </button>
+                            ))}
                         </div>
 
-                        <section className="admin-section">
-                            <div className="table-container">
-                                <table className="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Customer</th>
-                                            <th>Total</th>
-                                            <th>Status</th>
-                                            <th>Details</th>
-                                            <th>Action</th>
+                        <div className="search-bar" style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
+                            <input
+                                type="text"
+                                placeholder="Search by customer or ID..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '0.8rem 1rem',
+                                    borderRadius: '12px',
+                                    border: '1px solid var(--border)',
+                                    backgroundColor: 'var(--bg-main)',
+                                    color: 'var(--text-main)',
+                                    fontSize: '0.9rem'
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    <section className="admin-section">
+                        <div className="table-container">
+                            <table className="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Customer</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Details</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredOrders.length > 0 ? filteredOrders.map((order) => (
+                                        <tr key={order._id}>
+                                            <td style={{ fontWeight: 700 }}>{order.orderNumber}</td>
+                                            <td>
+                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                    <span style={{ fontWeight: 600 }}>{order.customerName}</span>
+                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}</span>
+                                                </div>
+                                            </td>
+                                            <td><span style={{ color: 'var(--primary)', fontWeight: 700 }}>${order.total.toFixed(2)}</span></td>
+                                            <td>
+                                                <span className={`table-badge status-${order.status}`} style={{
+                                                    backgroundColor: order.status === 'confirmed' ? 'rgba(16, 185, 129, 0.1)' :
+                                                        order.status === 'cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                                                    color: order.status === 'confirmed' ? '#10b981' :
+                                                        order.status === 'cancelled' ? '#ef4444' : '#f59e0b',
+                                                    border: 'none',
+                                                    padding: '0.4rem 0.8rem',
+                                                    borderRadius: '20px',
+                                                    fontSize: '0.75rem'
+                                                }}>
+                                                    {order.status}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button
+                                                    className="add-book-btn"
+                                                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                                                    onClick={() => setSelectedOrder(order)}
+                                                >
+                                                    View Items
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <a href={`https://wa.me/${order.customerPhone}`} target="_blank" className="action-btn" title="Chat on WhatsApp">
+                                                    <Phone size={18} color="#25D366" />
+                                                </a>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredOrders.length > 0 ? filteredOrders.map((order) => (
-                                            <tr key={order._id}>
-                                                <td style={{ fontWeight: 700 }}>{order.orderNumber}</td>
-                                                <td>
-                                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                        <span style={{ fontWeight: 600 }}>{order.customerName}</span>
-                                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}</span>
-                                                    </div>
-                                                </td>
-                                                <td><span style={{ color: 'var(--primary)', fontWeight: 700 }}>${order.total.toFixed(2)}</span></td>
-                                                <td>
-                                                    <span className={`table-badge status-${order.status}`} style={{
-                                                        backgroundColor: order.status === 'confirmed' ? 'rgba(16, 185, 129, 0.1)' :
-                                                            order.status === 'cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                                                        color: order.status === 'confirmed' ? '#10b981' :
-                                                            order.status === 'cancelled' ? '#ef4444' : '#f59e0b',
-                                                        border: 'none',
-                                                        padding: '0.4rem 0.8rem',
-                                                        borderRadius: '20px',
-                                                        fontSize: '0.75rem'
-                                                    }}>
-                                                        {order.status}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <button
-                                                        className="add-book-btn"
-                                                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                                                        onClick={() => setSelectedOrder(order)}
-                                                    >
-                                                        View Items
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <a href={`https://wa.me/${order.customerPhone}`} target="_blank" className="action-btn" title="Chat on WhatsApp">
-                                                        <Phone size={18} color="#25D366" />
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        )) : (
-                                            <tr>
-                                                <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-                                                    No orders found matching your criteria.
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
-                    </>
-                )}
-            </main>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                                                No orders found matching your criteria.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </>
+            )}
 
             {/* Add Book Modal */}
             <AnimatePresence>
@@ -961,7 +954,7 @@ const Dashboard = () => {
                     </div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 };
 

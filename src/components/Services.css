@@ -135,33 +135,93 @@
 
 @media (max-width: 1024px) {
     .service-detail-section {
-        padding: 80px 0;
+        padding: 20px 0;
+        border: none;
     }
 
     .service-detail-container {
-        gap: 40px;
+        position: relative;
+        flex-direction: column !important;
+        text-align: center;
+        min-height: 520px;
+        justify-content: flex-end;
+        padding: 4rem 2rem;
+        border-radius: 32px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        width: 100%;
+    }
+
+    .service-detail-visual {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .image-wrapper-detailed {
+        width: 100%;
+        height: 100%;
+        border-radius: 32px;
+        box-shadow: none;
+    }
+
+    .image-wrapper-detailed::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        /* Premium dark gradient overlay for text readability */
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.98) 10%, rgba(15, 23, 42, 0.4) 100%);
+        z-index: 1;
+    }
+
+    .image-wrapper-detailed img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .service-detail-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+    }
+
+    .detail-icon,
+    .service-detail-content h2,
+    .detail-description,
+    .detail-highlights li {
+        color: #ffffff;
     }
 
     .service-detail-content h2 {
         font-size: 2.2rem;
+        margin-bottom: 1rem;
     }
-}
 
-@media (max-width: 768px) {
-    .service-detail-container {
-        flex-direction: column !important;
-        text-align: center;
+    .detail-description {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .detail-highlights {
+        margin-bottom: 1.5rem;
     }
 
     .detail-highlights li {
         justify-content: center;
+        font-size: 0.9rem;
     }
 
-    .image-wrapper-detailed img {
-        height: 350px;
-    }
-
-    .service-detail-content h2 {
-        font-size: 1.8rem;
+    .service-action-btn {
+        margin-top: 1rem;
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
     }
 }

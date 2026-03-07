@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Search, Filter, Star, ShoppingCart, SlidersHorizontal } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Search, Filter, Star, ShoppingCart, SlidersHorizontal, BookOpen } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
 import API_BASE_URL from '../config/api';
 import './Catalog.css';
 
 const Catalog = () => {
+    const location = useLocation();
     const { addToCart } = useCart();
     const [books, setBooks] = useState([]);
     const [filteredBooks, setFilteredBooks] = useState([]);
@@ -36,11 +37,21 @@ const Catalog = () => {
         });
     };
 
-    const categories = [
-        'All', 'Fiction', 'Non-Fiction', 'Fantasy', 'Mystery', 'Sci-Fi',
-        'Self-Help', 'Biography', 'History', 'Programming', 'Technology',
-        'Psychology', 'Business', 'Romance', 'Horror', 'Manga'
-    ];
+    const [categories, setCategories] = useState(['All']);
+
+    useEffect(() => {
+        if (books.length > 0) {
+            const rawCategories = books.map(book => {
+                const cat = book.category?.trim();
+                if (!cat) return null;
+                // Normalize to Title Case
+                return cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
+            }).filter(Boolean);
+
+            const uniqueCategories = ['All', ...new Set(rawCategories)];
+            setCategories(uniqueCategories);
+        }
+    }, [books]);
 
     useEffect(() => {
         fetchBooks();
@@ -68,7 +79,11 @@ const Catalog = () => {
         let result = [...books];
 
         if (selectedCategory !== 'All') {
-            result = result.filter(book => book.category === selectedCategory);
+            result = result.filter(book => {
+                const cat = book.category?.trim();
+                const normalizedCat = cat ? cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase() : '';
+                return normalizedCat === selectedCategory;
+            });
         }
 
         if (searchTerm) {
@@ -163,27 +178,16 @@ const Catalog = () => {
                                     transition={{ duration: 0.3 }}
                                     className="book-card"
                                 >
-                                    <Link to={`/book/${book._id}`}>
+                                    <Link to={`/book/${book._id}`} state={{ backgroundLocation: location }}>
                                         <div className="book-cover">
                                             <img
                                                 src={book.cover.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
                                                 alt={book.title}
                                                 style={{ opacity: book.stock <= 0 ? 0.5 : 1 }}
                                             />
-                                            <div className="card-overlay" onClick={(e) => book.stock > 0 && handleQuickAdd(e, book)}>
-                                                <button
-                                                    className="add-to-cart"
-                                                    disabled={book.stock <= 0}
-                                                    style={{
-                                                        cursor: book.stock <= 0 ? 'not-allowed' : 'pointer',
-                                                        opacity: book.stock <= 0 ? 0.5 : 1
-                                                    }}
-                                                >
-                                                    {book.stock > 0 ? (
-                                                        <><ShoppingCart size={18} /> Add to Cart</>
-                                                    ) : (
-                                                        'Out of Stock'
-                                                    )}
+                                            <div className="card-overlay">
+                                                <button className="add-to-cart">
+                                                    <BookOpen size={18} /> View Details
                                                 </button>
                                             </div>
                                             <div className="category-tag">{book.category}</div>
