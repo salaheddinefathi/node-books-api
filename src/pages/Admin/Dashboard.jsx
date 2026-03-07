@@ -184,8 +184,15 @@ const Dashboard = () => {
         try {
             setError(null);
             const res = await fetch(`${API_BASE_URL}/api/books`);
-            const data = await res.json();
 
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                const text = await res.text();
+                console.error('Expected JSON but got:', text.substring(0, 100));
+                throw new Error("Server returned HTML instead of JSON. Check API_BASE_URL.");
+            }
+
+            const data = await res.json();
             if (res.status === 401 || res.status === 403) {
                 localStorage.removeItem('lumina_auth_token');
                 window.location.href = '/admin/login';

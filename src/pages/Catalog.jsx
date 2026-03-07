@@ -64,6 +64,14 @@ const Catalog = () => {
     const fetchBooks = async () => {
         try {
             const res = await fetch(`${API_BASE_URL}/api/books`);
+
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                const text = await res.text();
+                console.error('Expected JSON but got:', text.substring(0, 100));
+                throw new Error("Server returned HTML. Check if backend is running.");
+            }
+
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || 'Failed to fetch books');
             setBooks(data);
