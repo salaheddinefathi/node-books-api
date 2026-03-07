@@ -18,18 +18,20 @@ if (!fs.existsSync(uploadsDir)) {
 // Middleware
 const allowedOrigins = [
     'https://node-books-api-ekwm.vercel.app',
+    'https://node-books-api-production-bb25.up.railway.app',
     'http://localhost:5173',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'http://localhost:4173',
 ];
 
 app.use(cors({
     origin: (origin, callback) => {
         // Allow requests with no origin (e.g. curl, Postman, mobile apps)
         if (!origin) return callback(null, true);
-        // Allow any Vercel preview/branch deployment for this project
+        // Allow any Vercel deployment for any project slug
         if (
             allowedOrigins.includes(origin) ||
-            /^https:\/\/node-books-api-ekwm[a-z0-9-]*\.vercel\.app$/.test(origin)
+            /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)
         ) {
             return callback(null, true);
         }
