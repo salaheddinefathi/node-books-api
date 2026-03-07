@@ -15,32 +15,17 @@ if (!fs.existsSync(uploadsDir)) {
     console.log('📁 Created uploads directory');
 }
 
-// Middleware
-const allowedOrigins = [
-    'https://node-books-api-ekwm.vercel.app',
-    'https://node-books-api-production-bb25.up.railway.app',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://localhost:4173',
-];
-
-app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (e.g. curl, Postman, mobile apps)
-        if (!origin) return callback(null, true);
-        // Allow any Vercel deployment for any project slug
-        if (
-            allowedOrigins.includes(origin) ||
-            /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)
-        ) {
-            return callback(null, true);
-        }
-        return callback(new Error(`CORS policy: origin ${origin} not allowed`));
-    },
-    credentials: true,
+// Middleware - CORS
+const corsOptions = {
+    origin: '*',
+    credentials: false,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
+
+app.use(cors(corsOptions));
+// Handle preflight OPTIONS requests for all routes
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
