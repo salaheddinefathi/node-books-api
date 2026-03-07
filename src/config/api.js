@@ -5,9 +5,9 @@ const getApiBaseUrl = () => {
     // In production/mobile, localhost:5000 won't work. 
     // If we're on a non-localhost domain, we might want to use a relative path /api
     // or a hardcoded production URL.
+    // Fallback: if not on localhost, use the Railway backend
     if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
-        // Fallback for your specific Vercel deployment if VITE_API_URL is missing
-        return 'https://node-books-api-ekwm.vercel.app';
+        return 'https://node-books-api-production-bb25.up.railway.app';
     }
 
     return 'http://localhost:5000';
