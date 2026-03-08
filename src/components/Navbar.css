@@ -226,94 +226,16 @@
         display: none;
     }
 
-    .nav-links.mobile-open {
-        position: fixed;
-        top: 0;
-        right: 0;
-        height: 100vh;
-        width: 300px;
-        background: var(--surface);
-        display: flex;
-        flex-direction: column;
-        padding: 0;
-        gap: 0;
-        text-align: left;
-        border-left: 1px solid var(--border);
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-        z-index: 1001;
+    .nav-actions {
+        gap: 0.5rem;
     }
 
-    .mobile-menu-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.5rem;
-        background: var(--bg-main);
-        border-bottom: 1px solid var(--border);
+    .logo-text {
+        font-size: 1.1rem;
     }
 
-    .menu-title {
-        font-weight: 800;
-        font-size: 1.25rem;
-        color: var(--text-main);
-    }
-
-    .close-menu-btn {
-        color: var(--text-muted);
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .close-menu-btn:hover {
-        color: var(--primary);
-        transform: rotate(90deg);
-    }
-
-    .mobile-menu-links {
-        display: flex;
-        flex-direction: column;
-        padding: 1.5rem;
-        gap: 1.25rem;
-    }
-
-    .nav-link {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--text-main);
-        transition: var(--transition-fast);
-        padding: 0.5rem 0;
-    }
-
-    .nav-link:hover {
-        color: var(--primary);
-        transform: translateX(5px);
-    }
-
-    .logout-text {
-        font-size: 1.15rem !important;
-        font-weight: 700 !important;
-        background: none;
-        border: none;
-        cursor: pointer;
-    }
-
-    .mobile-menu-btn {
-        display: flex;
-        z-index: 1001;
-        background: none;
-        border: none;
-        padding: 0.5rem;
-    }
-
-    .navbar.scrolled .nav-links.mobile-open {
-        backdrop-filter: none;
-    }
-
-    /* Mobile Side Menu Button Adjustments */
-    .mobile-menu-btn {
-        margin-left: 0.5rem;
+    .hide-on-mobile {
+        display: none !important;
     }
 }
 
@@ -401,14 +323,21 @@
         gap: 0.25rem;
         color: var(--text-muted);
         text-decoration: none;
-        padding: 0.5rem;
+        padding: 0.35rem 0.1rem;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
+        flex: 1;
+        min-width: 0;
     }
 
     .tab-item span {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
         font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-align: center;
     }
 
     .tab-item.active {

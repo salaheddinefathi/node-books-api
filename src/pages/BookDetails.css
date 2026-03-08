@@ -7,16 +7,8 @@
     z-index: 2000;
     display: flex;
     flex-direction: column;
-    pointer-events: none;
-}
-
-.book-details-overlay.full-page {
-    position: relative;
-    height: auto;
-    min-height: 100vh;
-    z-index: 1;
     pointer-events: auto;
-    background: var(--bg-main);
+    /* Changed to auto to ensure interaction */
 }
 
 .details-backdrop {
@@ -38,7 +30,6 @@
     margin-top: auto;
     width: 100%;
     height: 98vh;
-    /* Slid up almost to the top */
     background: var(--bg-main);
     border-top-left-radius: 32px;
     border-top-right-radius: 32px;
@@ -48,23 +39,9 @@
     padding-bottom: 40px;
     pointer-events: auto;
     scrollbar-gutter: stable;
-    /* Prevent body from scrolling when modal is open handled in JS */
 }
 
-.book-details-page.full-page {
-    height: auto;
-    min-height: 100vh;
-    border-radius: 0;
-    box-shadow: none;
-    margin-top: 0;
-    padding-top: 100px;
-    /* Space for fixed navbar */
-}
-
-/* Hide handle in full page mode */
-.book-details-page.full-page .sheet-handle {
-    display: none;
-}
+/* Handle is always shown to maintain bottom-sheet look */
 
 .book-details-page::-webkit-scrollbar {
     width: 8px;

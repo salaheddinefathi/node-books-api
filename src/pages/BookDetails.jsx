@@ -82,24 +82,24 @@ const BookDetails = () => {
 
     return (
         <motion.div
-            className={`book-details-overlay ${!isModal ? 'full-page' : ''}`}
-            initial={isModal ? { opacity: 0 } : { opacity: 1 }}
+            className="book-details-overlay"
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
         >
-            {isModal && <div className="details-backdrop" onClick={() => navigate(-1)}></div>}
+            <div className="details-backdrop" onClick={() => (isModal ? navigate(-1) : navigate('/catalog'))}></div>
             <motion.div
-                className={`book-details-page ${!isModal ? 'full-page' : ''}`}
-                initial={isModal ? { y: "100%" } : { y: 0 }}
-                animate={{ y: isModal ? "2%" : 0 }}
+                className="book-details-page"
+                initial={{ y: "100%" }}
+                animate={{ y: "2%" }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 30, stiffness: 150 }}
             >
                 <div className="sheet-handle"></div>
                 <div className="container">
-                    <button onClick={() => navigate(-1)} className="back-btn">
-                        <ArrowLeft size={20} /> Back to Catalog
+                    <button onClick={() => navigate('/')} className="back-btn">
+                        <ArrowLeft size={20} /> Back
                     </button>
 
                     <div className="details-layout">

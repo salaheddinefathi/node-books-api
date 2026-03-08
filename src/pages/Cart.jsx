@@ -83,27 +83,34 @@ const Cart = () => {
 
         // Build WhatsApp message (always ready as fallback)
         const buildWhatsAppMessage = (orderNumber = 'N/A') => {
+            const appUrl = "https://node-books-api-ekwm.vercel.app";
             const message = [
-                `📚 *New Order from LuminaBooks*`,
-                orderNumber !== 'N/A' ? `*Order #:* ${orderNumber}` : '',
-                `---------------------------`,
+                `📚 *LuminaBooks | New Order Confirmed*`,
+                `Hello *${user.name}*, thank you for shopping with us! Your order has been received and is being processed.`,
+                ``,
                 `👤 *Customer Details:*`,
-                `   - Name: ${user.name}`,
-                `   - ID: ${user.userId}`,
-                `   - Phone: ${user.phone}`,
                 ``,
-                `🛒 *Books Ordered:*`,
-                ...cart.map((item, index) => {
-                    const itemImageUrl = item.cover.startsWith('http') ? item.cover : `${API_BASE_URL}${item.cover}`;
-                    return `*${index + 1}. ${item.title}*\n   - Quantity: ${item.quantity}\n   - Price: $${(item.price * item.quantity).toFixed(2)}\n   - Cover: ${itemImageUrl}\n`;
+                `Name: ${user.name}`,
+                `Customer ID: ${user.userId?.slice(-6).toUpperCase() || 'N/A'}`,
+                `Phone: ${user.phone}`,
+                ``,
+                `📦 *Items Ordered:*`,
+                ``,
+                ...cart.map((item) => {
+                    const bookUrl = `${appUrl}/book/${item._id}`;
+                    return `Book: *${item.title}*\nQuantity: ${item.quantity}\nPrice: $${(item.price * item.quantity).toFixed(2)}\nView Details: ${bookUrl}\n`;
                 }),
-                `---------------------------`,
-                `*Subtotal:* $${cartTotal.toFixed(2)}`,
-                shipping > 0 ? `*Shipping:* $${shipping.toFixed(2)}` : `*Shipping:* FREE`,
-                `✨ *Total Payable: $${finalTotal.toFixed(2)}*`,
+                `💰 *Order Summary:*`,
                 ``,
-                `Please confirm my order. Thank you!`
-            ].filter(line => line !== null).join('\n');
+                `Subtotal: $${cartTotal.toFixed(2)}`,
+                shipping > 0 ? `Shipping: $${shipping.toFixed(2)}` : `Shipping: FREE 🚚`,
+                ``,
+                `*TOTAL PAYABLE: $${finalTotal.toFixed(2)} ✅*`,
+                ``,
+                `📍 Our team will contact you shortly to confirm the delivery schedule.`,
+                ``,
+                `Thank you for choosing *LuminaBooks*!`
+            ].join('\n');
 
             return encodeURIComponent(message);
         };

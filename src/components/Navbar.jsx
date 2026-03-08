@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Search, Menu, X, BookOpen, LogIn, Sun, Moon, Home, User, Package, ClipboardList } from 'lucide-react';
+import { ShoppingCart, Search, Menu, X, BookOpen, LogIn, Sun, Moon, Home, User, Package, ClipboardList, MessageCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -31,46 +31,13 @@ const Navbar = () => {
                     <span className="logo-text">Lumina<span>Books</span></span>
                 </Link>
 
-                <AnimatePresence>
-                    {isMenuOpen && (
-                        <motion.div
-                            initial={{ opacity: 0, x: '100%' }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: '100%' }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="nav-links mobile-open hide-on-desktop"
-                        >
-                            <div className="mobile-menu-links">
-                                <Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>Home</Link>
-                                <Link to="/catalog" className="nav-link" onClick={() => setIsMenuOpen(false)}>Catalog</Link>
 
-                                {!user ? (
-                                    <>
-                                        <Link to="/login" className="nav-link" onClick={() => setIsMenuOpen(false)}>Login</Link>
-                                        <Link to="/signup" className="nav-link" onClick={() => setIsMenuOpen(false)}>Join Us</Link>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Link to="/my-orders" className="nav-link" onClick={() => setIsMenuOpen(false)}>My Orders</Link>
-                                        {user.role === 'admin' && (
-                                            <Link to="/admin" className="nav-link" onClick={() => setIsMenuOpen(false)}>Admin Dashboard</Link>
-                                        )}
-                                        <div className="dropdown-divider" style={{ margin: '1rem 0', opacity: 0.2 }} />
-                                        <button onClick={() => { logout(); setIsMenuOpen(false); }} className="nav-link logout-text" style={{ textAlign: 'left', width: '100%', color: '#ef4444' }}>
-                                            Logout
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-
-                        </motion.div>
-                    )}
-                </AnimatePresence>
 
                 <div className="nav-links hide-on-mobile">
                     <Link to="/" className="nav-link">Home</Link>
                     <Link to="/catalog" className="nav-link">Catalog</Link>
                     <Link to="/my-orders" className="nav-link">My Orders</Link>
+                    <Link to="/support" className="nav-link">Support</Link>
                     {user && user.role === 'admin' && <Link to="/admin" className="nav-link">Admin Dashboard</Link>}
                 </div>
 
@@ -89,12 +56,12 @@ const Navbar = () => {
                     </Link>
 
                     {!user ? (
-                        <div className="auth-btns hide-on-mobile" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginLeft: '0.5rem' }}>
+                        <div className="auth-btns" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginLeft: '0.5rem' }}>
                             <Link to="/login" className="action-item">
-                                <div className="btn-glass" style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', borderRadius: '12px' }}>Login</div>
+                                <div className="btn-glass" style={{ padding: '0.4rem 0.75rem', fontSize: '0.75rem', borderRadius: '10px' }}>Login</div>
                             </Link>
                             <Link to="/signup" className="action-item">
-                                <div className="btn btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem' }}>Join Us</div>
+                                <div className="btn btn-primary" style={{ padding: '0.4rem 0.75rem', fontSize: '0.75rem', borderRadius: '10px' }}>Join Us</div>
                             </Link>
                         </div>
                     ) : (
@@ -136,34 +103,30 @@ const Navbar = () => {
                             </AnimatePresence>
                         </div>
                     )}
-
-                    <button
-                        className="mobile-menu-btn hide-on-desktop"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        aria-label="Toggle Menu"
-                    >
-                        {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
-                    </button>
                 </div>
             </div>
 
             {/* Mobile Bottom Tab Bar */}
             <div className="mobile-bottom-nav hide-on-desktop">
                 <Link to="/" className={`tab-item ${location.pathname === '/' ? 'active' : ''}`}>
-                    <Home size={22} />
+                    <Home size={20} />
                     <span>Home</span>
                 </Link>
                 <Link to="/catalog" className={`tab-item ${location.pathname === '/catalog' ? 'active' : ''}`}>
-                    <Search size={22} />
+                    <Search size={20} />
                     <span>Explore</span>
                 </Link>
+                <Link to="/support" className={`tab-item ${location.pathname === '/support' ? 'active' : ''}`}>
+                    <MessageCircle size={20} />
+                    <span>Support</span>
+                </Link>
                 <Link to="/my-orders" className={`tab-item ${location.pathname === '/my-orders' ? 'active' : ''}`}>
-                    <Package size={22} />
+                    <Package size={20} />
                     <span>Orders</span>
                 </Link>
                 <Link to="/cart" className={`tab-item cart-tab ${location.pathname === '/cart' ? 'active' : ''}`}>
                     <div className="cart-icon-wrapper">
-                        <ShoppingCart size={22} />
+                        <ShoppingCart size={20} />
                         {getCartCount() > 0 && <span className="tab-badge">{getCartCount()}</span>}
                     </div>
                     <span>Cart</span>

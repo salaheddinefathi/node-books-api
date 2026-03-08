@@ -10,6 +10,7 @@ import Cart from './pages/Cart';
 import AdminLogin from './pages/AdminLogin';
 import MyOrders from './pages/MyOrders';
 import Analytics from './pages/Admin/Analytics';
+import Support from './pages/Support';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import { AnimatePresence } from 'framer-motion';
@@ -47,6 +48,7 @@ const NavigationRoutes = () => {
                         <Route path="/book/:id" element={<BookDetails />} />
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/my-orders" element={<MyOrders />} />
+                        <Route path="/support" element={<Support />} />
 
                         {/* Auth */}
                         <Route path="/login" element={<Login />} />

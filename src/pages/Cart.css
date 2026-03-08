@@ -237,6 +237,8 @@
 
 .empty-box {
     max-width: 500px;
+    margin: 0 auto;
+    /* Center within container */
     padding: 4rem 3rem;
     background: var(--surface);
     border-radius: 30px;
