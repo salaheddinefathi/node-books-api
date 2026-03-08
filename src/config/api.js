@@ -1,15 +1,21 @@
 // Central API configuration
 const getApiBaseUrl = () => {
-    if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+    // 1. Check environment variable first (standard Vite way)
+    const envUrl = import.meta.env.VITE_API_URL;
+    if (envUrl && envUrl.trim() !== "") return envUrl;
 
-    // In production/mobile, localhost:5000 won't work. 
-    // If we're on a non-localhost domain, we might want to use a relative path /api
-    // or a hardcoded production URL.
-    // Fallback: if not on localhost, use the Railway backend
-    if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
-        return 'https://node-books-api-production-bb25.up.railway.app';
+    // 2. Production Fallback: If we are not on localhost, use the Railway URL
+    // We use the one you provided which is more stable
+    const productionUrl = 'https://node-books-api-production.up.railway.app';
+
+    if (typeof window !== 'undefined') {
+        if (!window.location.hostname.includes('localhost') &&
+            !window.location.hostname.includes('127.0.0.1')) {
+            return productionUrl;
+        }
     }
 
+    // 3. Local Fallback
     return 'http://localhost:5000';
 };
 
