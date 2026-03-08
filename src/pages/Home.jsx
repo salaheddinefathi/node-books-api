@@ -42,14 +42,19 @@ const Home = () => {
     };
 
     useEffect(() => {
+        console.log("🔗 Calling API:", `${API_BASE_URL}/api/books`);
         fetch(`${API_BASE_URL}/api/books`)
             .then(res => {
-                if (!res.ok) throw new Error('API Unavailable');
+                if (!res.ok) throw new Error(`API Error: ${res.status}`);
+                const contentType = res.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("❌ Server returned HTML instead of JSON. Check your API_BASE_URL.");
+                }
                 return res.json();
             })
             .then(data => setBooks(Array.isArray(data) ? data : []))
             .catch(err => {
-                console.error('Error fetching books:', err);
+                console.error('Error fetching books:', err.message);
                 setError(true);
             });
     }, []);
