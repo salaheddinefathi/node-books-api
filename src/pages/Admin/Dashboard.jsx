@@ -20,7 +20,15 @@ import {
     Phone,
     Truck,
     Home,
-    BarChart3
+    BarChart3,
+    Pencil,
+    Calendar,
+    Layers,
+    Search,
+    Filter,
+    ChevronRight,
+    Eye,
+    ChevronLeft
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import API_BASE_URL from '../../config/api';
@@ -40,6 +48,7 @@ const Dashboard = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [formData, setFormData] = useState({ title: '', author: '', price: '', category: 'Fiction', stock: '', description: '' });
     const [coverFile, setCoverFile] = useState(null);
+    const [editModal, setEditModal] = useState({ show: false, book: null, field: '', value: '' });
 
     useEffect(() => {
         setActiveTab(tabParam);
@@ -172,6 +181,7 @@ const Dashboard = () => {
                     book._id === id ? { ...book, ...updates } : book
                 ));
                 toast.success('Updated successfully', { position: 'bottom-right' });
+                setEditModal({ show: false, book: null, field: '', value: '' });
             }
         } catch (err) {
             console.error('Inline update error:', err);
@@ -353,9 +363,13 @@ const Dashboard = () => {
                     <section className="admin-section">
                         <div className="section-title">
                             <h2>Recent Order Activity</h2>
-                            <button className="text-btn" onClick={() => setSearchParams({ tab: 'orders' })}>View All Orders</button>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button className="text-btn" onClick={() => setSearchParams({ tab: 'orders' })}>View All Orders</button>
+                            </div>
                         </div>
-                        <div className="table-container">
+
+                        {/* Desktop View: Table */}
+                        <div className="table-container hide-on-mobile">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
@@ -368,18 +382,10 @@ const Dashboard = () => {
                                 <tbody>
                                     {orders.slice(0, 5).map((order) => (
                                         <tr key={order._id}>
-                                            <td><span style={{ fontWeight: 600 }}>{order.orderNumber}</span></td>
+                                            <td><span style={{ fontWeight: 800 }}>{order.orderNumber}</span></td>
                                             <td>{order.customerName}</td>
                                             <td>
-                                                <span className={`table-badge status-${order.status}`} style={{
-                                                    backgroundColor: order.status === 'confirmed' ? 'rgba(16, 185, 129, 0.1)' :
-                                                        order.status === 'cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                                                    color: order.status === 'confirmed' ? '#10b981' :
-                                                        order.status === 'cancelled' ? '#ef4444' : '#f59e0b',
-                                                    border: 'none',
-                                                    padding: '0.4rem 0.8rem',
-                                                    borderRadius: '20px'
-                                                }}>
+                                                <span className={`table-badge status-${order.status}`}>
                                                     {order.status}
                                                 </span>
                                             </td>
@@ -390,6 +396,22 @@ const Dashboard = () => {
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Mobile View: Stacked Cards */}
+                        <div className="mobile-cards-list hide-on-desktop">
+                            {orders.slice(0, 5).map((order) => (
+                                <div key={order._id} className="data-card" onClick={() => setSelectedOrder(order)}>
+                                    <div className="data-card-left">
+                                        <span className="data-card-title">{order.customerName}</span>
+                                        <span className="data-card-subtitle">#{order.orderNumber} • {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}</span>
+                                    </div>
+                                    <div className="data-card-right">
+                                        <span className={`table-badge status-${order.status}`}>{order.status}</span>
+                                        <ChevronRight size={18} className="text-muted" />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
                 </>
@@ -461,7 +483,7 @@ const Dashboard = () => {
                                 </button>
                             </div>
                         </div>
-                        <div className="table-container">
+                        <div className="table-container hide-on-mobile">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
@@ -481,9 +503,6 @@ const Dashboard = () => {
                                                 <div style={{ color: '#ef4444', marginBottom: '1rem' }}>
                                                     <strong>⚠️ Connection Error:</strong> {error}
                                                 </div>
-                                                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                                                    Check if your MongoDB Atlas URI is correct in <code>server/.env</code>
-                                                </p>
                                             </td>
                                         </tr>
                                     ) : books && books.length > 0 ? books.map((book) => (
@@ -495,90 +514,72 @@ const Dashboard = () => {
                                                     style={{ width: '40px', height: '60px', borderRadius: '4px', objectFit: 'cover' }}
                                                 />
                                             </td>
-                                            <td><strong>{book.title}</strong></td>
+                                            <td><strong style={{ fontWeight: 800 }}>{book.title}</strong></td>
                                             <td className="hide-mobile">{book.author}</td>
                                             <td className="hide-mobile">
-                                                <select
-                                                    defaultValue={book.category}
-                                                    onChange={(e) => handleInlineUpdate(book._id, { category: e.target.value })}
-                                                    style={{
-                                                        padding: '0.4rem',
-                                                        borderRadius: '8px',
-                                                        border: '1px solid var(--border)',
-                                                        backgroundColor: 'var(--bg-main)',
-                                                        color: 'var(--text-main)',
-                                                        fontSize: '0.85rem',
-                                                        cursor: 'pointer'
-                                                    }}
-                                                >
-                                                    <option>Fiction</option>
-                                                    <option>Non-Fiction</option>
-                                                    <option>Fantasy</option>
-                                                    <option>Mystery</option>
-                                                    <option>Sci-Fi</option>
-                                                    <option>Self-Help</option>
-                                                    <option>Biography</option>
-                                                    <option>History</option>
-                                                    <option>Programming</option>
-                                                    <option>Technology</option>
-                                                    <option>Psychology</option>
-                                                    <option>Business</option>
-                                                    <option>Romance</option>
-                                                    <option>Horror</option>
-                                                    <option>Manga</option>
-                                                </select>
+                                                <span className="table-badge" style={{ backgroundColor: 'rgba(79, 70, 229, 0.08)', color: 'var(--primary)', border: 'none' }}>
+                                                    {book.category}
+                                                </span>
                                             </td>
                                             <td>
-                                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                                    <span style={{ position: 'absolute', left: '8px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>$</span>
-                                                    <input
-                                                        type="number"
-                                                        defaultValue={book.price}
-                                                        onBlur={(e) => handleInlineUpdate(book._id, { price: parseFloat(e.target.value) })}
-                                                        style={{
-                                                            width: '70px',
-                                                            padding: '0.4rem 0.4rem 0.4rem 1.2rem',
-                                                            borderRadius: '8px',
-                                                            border: '1px solid var(--border)',
-                                                            backgroundColor: 'var(--bg-main)',
-                                                            color: 'var(--text-main)',
-                                                            fontSize: '0.85rem'
-                                                        }}
-                                                    />
+                                                <div className="editable-value" onClick={() => setEditModal({ show: true, book, field: 'price', value: book.price })}>
+                                                    <span>${book.price}</span>
+                                                    <Pencil size={12} className="edit-pencil" />
                                                 </div>
                                             </td>
                                             <td>
-                                                <input
-                                                    type="number"
-                                                    defaultValue={book.stock}
-                                                    onBlur={(e) => handleInlineUpdate(book._id, { stock: parseInt(e.target.value) })}
-                                                    style={{
-                                                        width: '60px',
-                                                        padding: '0.4rem',
-                                                        borderRadius: '8px',
-                                                        border: '1px solid var(--border)',
-                                                        backgroundColor: 'var(--bg-main)',
-                                                        color: book.stock < 10 ? "#ef4444" : "var(--text-main)",
-                                                        fontWeight: book.stock < 10 ? 700 : 400,
-                                                        fontSize: '0.85rem'
-                                                    }}
-                                                />
+                                                <div className="editable-value" onClick={() => setEditModal({ show: true, book, field: 'stock', value: book.stock })}>
+                                                    <span style={{ color: book.stock < 10 ? "#ef4444" : "inherit" }}>{book.stock}</span>
+                                                    <Pencil size={12} className="edit-pencil" />
+                                                </div>
                                             </td>
                                             <td>
-                                                <button className="action-btn" onClick={() => openDeleteModal(book._id)} title="Delete">
-                                                    <Trash2 size={16} color="#ef4444" />
+                                                <button className="action-btn delete-btn" onClick={() => openDeleteModal(book._id)} title="Delete">
+                                                    <Trash2 size={18} color="#ef4444" />
                                                 </button>
                                             </td>
                                         </tr>
                                     )) : (
                                         <tr>
                                             <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                                                No books found. Check database connection.
+                                                No books found.
                                             </td>
                                         </tr>
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Mobile View: High Density Cards */}
+                        <div className="mobile-cards-list hide-on-desktop">
+                            {books.map((book) => (
+                                <div key={book._id} className="data-card" style={{ gap: '1rem' }}>
+                                    <img
+                                        src={book.cover?.startsWith('http') ? book.cover : `${API_BASE_URL}${book.cover}`}
+                                        alt={book.title}
+                                        style={{ width: '50px', height: '75px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }}
+                                    />
+                                    <div className="data-card-left" style={{ flex: 1 }}>
+                                        <span className="data-card-title">{book.title}</span>
+                                        <span className="data-card-subtitle">{book.author} • {book.category}</span>
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                            <div className="editable-value" style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }} onClick={() => setEditModal({ show: true, book, field: 'price', value: book.price })}>
+                                                <span>${book.price}</span>
+                                                <Pencil size={10} className="edit-pencil" />
+                                            </div>
+                                            <div className="editable-value" style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }} onClick={() => setEditModal({ show: true, book, field: 'stock', value: book.stock })}>
+                                                <span style={{ color: book.stock < 10 ? "#ef4444" : "inherit" }}>{book.stock} Units</span>
+                                                <Pencil size={10} className="edit-pencil" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="data-card-right">
+                                        <button className="action-btn" onClick={() => openDeleteModal(book._id)}>
+                                            <Trash2 size={18} color="#ef4444" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </section>
                 </>
@@ -596,51 +597,43 @@ const Dashboard = () => {
                         </button>
                     </header>
 
-                    <div className="orders-toolbar" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <div className="filter-tabs" style={{ display: 'flex', backgroundColor: 'var(--bg-main)', padding: '0.3rem', borderRadius: '12px', gap: '0.3rem' }}>
+                    <div className="orders-toolbar" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>
+                        <div className="segmented-control">
                             {['all', 'pending', 'confirmed', 'cancelled'].map(status => (
                                 <button
                                     key={status}
                                     onClick={() => setStatusFilter(status)}
-                                    className={`filter-tab ${statusFilter === status ? 'active' : ''}`}
-                                    style={{
-                                        padding: '0.5rem 1rem',
-                                        borderRadius: '10px',
-                                        border: 'none',
-                                        backgroundColor: statusFilter === status ? 'var(--primary)' : 'transparent',
-                                        color: statusFilter === status ? 'white' : 'var(--text-muted)',
-                                        cursor: 'pointer',
-                                        fontSize: '0.85rem',
-                                        textTransform: 'capitalize',
-                                        transition: 'all 0.2s'
-                                    }}
+                                    className={`filter-chip ${statusFilter === status ? 'active' : ''}`}
                                 >
-                                    {status}
+                                    {status === 'all' ? 'All Orders' : status.charAt(0).toUpperCase() + status.slice(1)}
                                 </button>
                             ))}
                         </div>
 
-                        <div className="search-bar" style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
+                        <div className="search-bar-premium" style={{ position: 'relative' }}>
+                            <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                             <input
                                 type="text"
-                                placeholder="Search by customer or ID..."
+                                placeholder="Search by customer name or order number..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 style={{
                                     width: '100%',
-                                    padding: '0.8rem 1rem',
-                                    borderRadius: '12px',
+                                    padding: '0.9rem 1rem 0.9rem 3rem',
+                                    borderRadius: '14px',
                                     border: '1px solid var(--border)',
-                                    backgroundColor: 'var(--bg-main)',
+                                    backgroundColor: '#FFFFFF',
                                     color: 'var(--text-main)',
-                                    fontSize: '0.9rem'
+                                    fontSize: '0.95rem',
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
                                 }}
                             />
                         </div>
                     </div>
 
                     <section className="admin-section">
-                        <div className="table-container">
+                        {/* Desktop View Table */}
+                        <div className="table-container hide-on-mobile">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
@@ -648,59 +641,66 @@ const Dashboard = () => {
                                         <th>Customer</th>
                                         <th>Total</th>
                                         <th>Status</th>
-                                        <th>Details</th>
-                                        <th>Action</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredOrders.length > 0 ? filteredOrders.map((order) => (
                                         <tr key={order._id}>
-                                            <td style={{ fontWeight: 700 }}>{order.orderNumber}</td>
+                                            <td style={{ fontWeight: 800 }}>{order.orderNumber}</td>
                                             <td>
                                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                    <span style={{ fontWeight: 600 }}>{order.customerName}</span>
+                                                    <span style={{ fontWeight: 700 }}>{order.customerName}</span>
                                                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}</span>
                                                 </div>
                                             </td>
-                                            <td><span style={{ color: 'var(--primary)', fontWeight: 700 }}>${order.total.toFixed(2)}</span></td>
+                                            <td><span style={{ color: 'var(--primary)', fontWeight: 800 }}>${order.total.toFixed(2)}</span></td>
                                             <td>
-                                                <span className={`table-badge status-${order.status}`} style={{
-                                                    backgroundColor: order.status === 'confirmed' ? 'rgba(16, 185, 129, 0.1)' :
-                                                        order.status === 'cancelled' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                                                    color: order.status === 'confirmed' ? '#10b981' :
-                                                        order.status === 'cancelled' ? '#ef4444' : '#f59e0b',
-                                                    border: 'none',
-                                                    padding: '0.4rem 0.8rem',
-                                                    borderRadius: '20px',
-                                                    fontSize: '0.75rem'
-                                                }}>
+                                                <span className={`table-badge status-${order.status}`}>
                                                     {order.status}
                                                 </span>
                                             </td>
-                                            <td>
-                                                <button
-                                                    className="add-book-btn"
-                                                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                                                    onClick={() => setSelectedOrder(order)}
-                                                >
-                                                    View Items
+                                            <td style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button className="action-btn" onClick={() => setSelectedOrder(order)} title="View Details">
+                                                    <Eye size={18} />
                                                 </button>
-                                            </td>
-                                            <td>
-                                                <a href={`https://wa.me/${order.customerPhone}`} target="_blank" className="action-btn" title="Chat on WhatsApp">
+                                                <a href={`https://wa.me/${order.customerPhone}`} target="_blank" className="action-btn" title="WhatsApp Customer">
                                                     <Phone size={18} color="#25D366" />
                                                 </a>
                                             </td>
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                                            <td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                                                 No orders found matching your criteria.
                                             </td>
                                         </tr>
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Mobile View Cards */}
+                        <div className="mobile-cards-list hide-on-desktop">
+                            {filteredOrders.length > 0 ? filteredOrders.map((order) => (
+                                <div key={order._id} className="data-card" onClick={() => setSelectedOrder(order)}>
+                                    <div className="data-card-left">
+                                        <span className="data-card-title">{order.customerName}</span>
+                                        <span className="data-card-subtitle">#{order.orderNumber} • {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}</span>
+                                        <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+                                            <span className={`table-badge status-${order.status}`}>{order.status}</span>
+                                        </div>
+                                    </div>
+                                    <div className="data-card-right">
+                                        <span className="data-card-price">${order.total.toFixed(2)}</span>
+                                        <ChevronRight size={18} className="text-muted" />
+                                    </div>
+                                </div>
+                            )) : (
+                                <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                                    No orders found.
+                                </div>
+                            )}
                         </div>
                     </section>
                 </>
@@ -957,6 +957,60 @@ const Dashboard = () => {
                                     {isDeleting ? 'Deleting...' : 'Delete Book'}
                                 </button>
                             </div>
+                        </motion.div>
+                    </div>
+                )}
+                {/* Inline Edit Modal (Bottom Sheet for Mobile) */}
+                {editModal.show && (
+                    <div className="modal-overlay" style={{ alignItems: window.innerWidth < 768 ? 'flex-end' : 'center' }}>
+                        <motion.div
+                            initial={window.innerWidth < 768 ? { y: '100%' } : { scale: 0.9, opacity: 0 }}
+                            animate={window.innerWidth < 768 ? { y: 0 } : { scale: 1, opacity: 1 }}
+                            exit={window.innerWidth < 768 ? { y: '100%' } : { scale: 0.9, opacity: 0 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="modal-content"
+                            style={{
+                                maxWidth: '450px',
+                                borderRadius: window.innerWidth < 768 ? '32px 32px 0 0' : '32px',
+                                padding: '2rem'
+                            }}
+                        >
+                            <div className="modal-header">
+                                <div>
+                                    <h2 style={{ fontSize: '1.25rem' }}>Update {editModal.field}</h2>
+                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{editModal.book.title}</p>
+                                </div>
+                                <button onClick={() => setEditModal({ show: false, book: null, field: '', value: '' })}>
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ textTransform: 'capitalize' }}>New {editModal.field}</label>
+                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                    {editModal.field === 'price' && <span style={{ position: 'absolute', left: '16px', fontWeight: 700, color: 'var(--text-muted)' }}>$</span>}
+                                    <input
+                                        type="number"
+                                        autoFocus
+                                        value={editModal.value}
+                                        onChange={(e) => setEditModal({ ...editModal, value: e.target.value })}
+                                        style={{
+                                            width: '100%',
+                                            padding: editModal.field === 'price' ? '1rem 1rem 1rem 2.5rem' : '1rem',
+                                            fontSize: '1.1rem',
+                                            fontWeight: 700
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                className="add-btn"
+                                style={{ width: '100%', marginTop: 0 }}
+                                onClick={() => handleInlineUpdate(editModal.book._id, { [editModal.field]: parseFloat(editModal.value) })}
+                            >
+                                Save Changes
+                            </button>
                         </motion.div>
                     </div>
                 )}

@@ -8,11 +8,13 @@ import API_BASE_URL from '../config/api';
 import './Home.css';
 import Services from '../components/Services';
 import heroImg from '../assets/hero.png';
+import Loading from '../components/Loading';
 
 const Home = () => {
     const location = useLocation();
     const { addToCart } = useCart();
     const [books, setBooks] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     // Helper to chunk books into rows
@@ -52,12 +54,18 @@ const Home = () => {
                 }
                 return res.json();
             })
-            .then(data => setBooks(Array.isArray(data) ? data : []))
+            .then(data => {
+                setBooks(Array.isArray(data) ? data : []);
+                setIsLoading(false);
+            })
             .catch(err => {
                 console.error('Error fetching books:', err.message);
                 setError(true);
+                setIsLoading(false);
             });
     }, []);
+
+    if (isLoading) return <Loading fullPage />;
 
     return (
         <div className="home-page">

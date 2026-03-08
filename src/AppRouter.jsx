@@ -19,6 +19,7 @@ import AdminLayout from './components/Admin/AdminLayout';
 const NavigationRoutes = () => {
     const location = useLocation();
     const backgroundLocation = location.state?.backgroundLocation;
+    const isAuthPage = ['/login', '/signup'].includes(location.pathname);
     const isAdmin = location.pathname.startsWith('/admin');
 
     if (isAdmin) {
@@ -36,7 +37,7 @@ const NavigationRoutes = () => {
 
     return (
         <div className="app-content">
-            <Navbar />
+            {!isAuthPage && <Navbar />}
             <main>
                 <AnimatePresence mode="wait">
                     <Routes location={backgroundLocation || location}>

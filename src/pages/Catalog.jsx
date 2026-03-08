@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Filter, Star, ShoppingCart, SlidersHorizontal, BookOpen } from 'lucide-react';
+import { Search, Filter, Star, ShoppingCart, SlidersHorizontal, BookOpen, ChevronDown } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
 import API_BASE_URL from '../config/api';
 import './Catalog.css';
+import Loading from '../components/Loading';
 
 const Catalog = () => {
     const location = useLocation();
@@ -17,6 +18,14 @@ const Catalog = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [sortBy, setSortBy] = useState('newest'); // 'newest', 'price-low', 'price-high', 'rating'
+    const [isSortOpen, setIsSortOpen] = useState(false);
+
+    const sortOptions = [
+        { value: 'newest', label: 'Newest First' },
+        { value: 'price-low', label: 'Price: Low to High' },
+        { value: 'price-high', label: 'Price: High to Low' },
+        { value: 'rating', label: 'Top Rated' },
+    ];
 
     const handleQuickAdd = (e, book) => {
         e.preventDefault();
@@ -52,14 +61,6 @@ const Catalog = () => {
             setCategories(uniqueCategories);
         }
     }, [books]);
-
-    useEffect(() => {
-        fetchBooks();
-    }, []);
-
-    useEffect(() => {
-        filterBooks();
-    }, [searchTerm, selectedCategory, sortBy, books]);
 
     const fetchBooks = async () => {
         try {
@@ -101,7 +102,6 @@ const Catalog = () => {
             );
         }
 
-        // Apply Sorting
         if (sortBy === 'price-low') {
             result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
         } else if (sortBy === 'price-high') {
@@ -114,6 +114,16 @@ const Catalog = () => {
 
         setFilteredBooks(result);
     };
+
+    useEffect(() => {
+        fetchBooks();
+    }, []);
+
+    useEffect(() => {
+        filterBooks();
+    }, [searchTerm, selectedCategory, sortBy, books]);
+
+    if (loading) return <Loading fullPage />;
 
     return (
         <div className="catalog-page">
@@ -142,14 +152,41 @@ const Catalog = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <div className="sort-dropdown">
-                            <SlidersHorizontal size={18} />
-                            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                                <option value="newest">Newest First</option>
-                                <option value="price-low">Price: Low to High</option>
-                                <option value="price-high">Price: High to Low</option>
-                                <option value="rating">Top Rated</option>
-                            </select>
+                        <div className="custom-sort-container">
+                            <button
+                                className="custom-sort-trigger"
+                                onClick={() => setIsSortOpen(!isSortOpen)}
+                            >
+                                <SlidersHorizontal size={18} />
+                                <span>{sortOptions.find(o => o.value === sortBy)?.label}</span>
+                                <ChevronDown size={16} className={`chevron-icon ${isSortOpen ? 'open' : ''}`} />
+                            </button>
+
+                            <AnimatePresence>
+                                {isSortOpen && (
+                                    <motion.div
+                                        className="custom-sort-dropdown"
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        {sortOptions.map(option => (
+                                            <div
+                                                key={option.value}
+                                                className={`sort-option ${sortBy === option.value ? 'active' : ''}`}
+                                                onClick={() => {
+                                                    setSortBy(option.value);
+                                                    setIsSortOpen(false);
+                                                }}
+                                            >
+                                                {option.label}
+                                                {sortBy === option.value && <div className="active-dot" />}
+                                            </div>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                     <div className="category-scroll">

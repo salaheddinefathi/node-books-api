@@ -67,6 +67,27 @@ body {
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
+/* Force light theme for specific sections like Admin */
+.force-light-theme {
+  --bg-main: #f8fafc;
+  --bg-dots: rgba(91, 33, 182, 0.06);
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --glass: rgba(255, 255, 255, 0.75);
+  background-color: var(--bg-main) !important;
+  color: var(--text-main) !important;
+  min-height: 100vh;
+  position: relative;
+  z-index: 100;
+}
+
+.force-light-theme * {
+  border-color: var(--border);
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -99,6 +120,22 @@ button {
 @media (max-width: 768px) {
   .container {
     width: 92%;
+  }
+
+  .app-content {
+    padding-bottom: 80px;
+    /* Safe area for Bottom Nav */
+    min-height: 100vh;
+  }
+
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .hide-on-desktop {
+    display: none !important;
   }
 }
 

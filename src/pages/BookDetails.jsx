@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
 import API_BASE_URL from '../config/api';
 import './BookDetails.css';
+import Loading from '../components/Loading';
 
 const BookDetails = () => {
     const { id } = useParams();
@@ -34,6 +35,16 @@ const BookDetails = () => {
         };
         fetchBook();
     }, [id]);
+
+    // Lock scroll when modal is open
+    useEffect(() => {
+        if (isModal) {
+            document.body.style.overflow = 'hidden';
+            return () => {
+                document.body.style.overflow = 'unset';
+            };
+        }
+    }, [isModal]);
 
     const [quantity, setQuantity] = useState(1);
 
@@ -66,7 +77,7 @@ const BookDetails = () => {
         });
     };
 
-    if (loading) return <div className="details-loading">Searching the library...</div>;
+    if (loading) return <Loading fullPage />;
     if (error) return <div className="details-error">⚠️ {error}</div>;
 
     return (
@@ -81,7 +92,7 @@ const BookDetails = () => {
             <motion.div
                 className={`book-details-page ${!isModal ? 'full-page' : ''}`}
                 initial={isModal ? { y: "100%" } : { y: 0 }}
-                animate={{ y: isModal ? "5%" : 0 }}
+                animate={{ y: isModal ? "2%" : 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 30, stiffness: 150 }}
             >

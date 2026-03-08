@@ -5,6 +5,7 @@ import { ShoppingBag, ArrowRight, ChevronDown, ChevronUp, Phone } from 'lucide-r
 import { useAuth } from '../context/AuthContext';
 import API_BASE_URL from '../config/api';
 import './MyOrders.css';
+import Loading from '../components/Loading';
 
 const statusColors = {
     pending: { bg: 'rgba(245,158,11,0.1)', text: '#f59e0b' },
@@ -42,7 +43,7 @@ const MyOrders = () => {
         setExpandedId(prev => prev === id ? null : id);
     };
 
-    if (loading) return <div className="orders-loading">Loading your orders...</div>;
+    if (loading) return <Loading fullPage />;
 
     return (
         <div className="my-orders-page">

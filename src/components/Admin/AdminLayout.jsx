@@ -4,7 +4,7 @@ import './AdminLayout.css';
 
 const AdminLayout = ({ children }) => {
     return (
-        <div className="admin-layout-wrapper">
+        <div className="admin-layout-wrapper force-light-theme">
             <AdminSidebar />
             <main className="admin-content-main">
                 {children}

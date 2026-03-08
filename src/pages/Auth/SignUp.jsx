@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Phone, ArrowRight, LogIn } from 'lucide-react';
+import { Mail, Lock, User, Phone, ArrowRight, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import './Auth.css';
 
-const Register = () => {
+const SignUp = () => {
     const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '' });
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const { register } = useAuth();
     const navigate = useNavigate();
 
@@ -16,7 +18,14 @@ const Register = () => {
         setLoading(true);
         try {
             await register(formData);
-            toast.success('Registration successful! Welcome to LuminaBooks');
+            toast.success('Registration successful! Welcome to LuminaBooks', {
+                style: {
+                    borderRadius: '12px',
+                    background: '#1c1917',
+                    color: '#fff',
+                    fontFamily: 'Outfit, sans-serif'
+                }
+            });
             navigate('/');
         } catch (err) {
             toast.error(err.response?.data?.message || 'Registration failed');
@@ -26,167 +35,113 @@ const Register = () => {
     };
 
     return (
-        <div className="auth-container" style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '2rem',
-            background: 'var(--bg-main)'
-        }}>
+        <div className="auth-page">
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
                 className="auth-card"
-                style={{
-                    width: '100%',
-                    maxWidth: '450px',
-                    backgroundColor: 'var(--bg-card)',
-                    padding: '2.5rem',
-                    borderRadius: '24px',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                    border: '1px solid var(--border)'
-                }}
             >
-                <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                    <div style={{
-                        width: '64px',
-                        height: '64px',
-                        backgroundColor: 'var(--primary)',
-                        borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '0 auto 1.5rem',
-                        color: 'white'
-                    }}>
-                        <User size={32} />
+                <div className="auth-header">
+                    <div className="auth-logo">
+                        <UserPlus size={32} />
                     </div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Join Us</h1>
-                    <p style={{ color: 'var(--text-muted)' }}>Create your account to start shopping</p>
+                    <h1>Join Us</h1>
+                    <p>Create your account and explore thousands of books</p>
                 </div>
 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                    <div className="form-group">
-                        <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: 600, fontSize: '0.9rem' }}>Full Name</label>
-                        <div style={{ position: 'relative' }}>
-                            <User size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <form onSubmit={handleSubmit} className="auth-form">
+                    <div className="input-container">
+                        <label>Full Name</label>
+                        <div className="input-group">
+                            <User size={18} className="input-icon" />
                             <input
                                 type="text"
                                 required
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="Your full name"
-                                style={{
-                                    width: '100%',
-                                    padding: '0.8rem 1rem 0.8rem 3rem',
-                                    borderRadius: '12px',
-                                    border: '1px solid var(--border)',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                    color: 'var(--text-main)'
-                                }}
+                                placeholder="Enter your full name"
                             />
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: 600, fontSize: '0.9rem' }}>Email Address</label>
-                        <div style={{ position: 'relative' }}>
-                            <Mail size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <div className="input-container">
+                        <label>Email Address</label>
+                        <div className="input-group">
+                            <Mail size={18} className="input-icon" />
                             <input
                                 type="email"
                                 required
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 placeholder="name@example.com"
-                                style={{
-                                    width: '100%',
-                                    padding: '0.8rem 1rem 0.8rem 3rem',
-                                    borderRadius: '12px',
-                                    border: '1px solid var(--border)',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                    color: 'var(--text-main)'
-                                }}
                             />
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: 600, fontSize: '0.9rem' }}>Phone Number (Morocco)</label>
-                        <div style={{ position: 'relative' }}>
-                            <Phone size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <div className="input-container">
+                        <label>Phone Number (Morocco)</label>
+                        <div className="input-group">
+                            <Phone size={18} className="input-icon" />
                             <input
                                 type="tel"
                                 required
                                 value={formData.phone}
                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                 placeholder="+212 6..."
-                                style={{
-                                    width: '100%',
-                                    padding: '0.8rem 1rem 0.8rem 3rem',
-                                    borderRadius: '12px',
-                                    border: '1px solid var(--border)',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                    color: 'var(--text-main)'
-                                }}
                             />
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: 600, fontSize: '0.9rem' }}>Password</label>
-                        <div style={{ position: 'relative' }}>
-                            <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <div className="input-container">
+                        <label>Password</label>
+                        <div className="input-group">
+                            <Lock size={18} className="input-icon" />
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 required
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 placeholder="••••••••"
-                                style={{
-                                    width: '100%',
-                                    padding: '0.8rem 1rem 0.8rem 3rem',
-                                    borderRadius: '12px',
-                                    border: '1px solid var(--border)',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                    color: 'var(--text-main)'
-                                }}
                             />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{
+                                    position: 'absolute',
+                                    right: '1.25rem',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: 'var(--text-muted)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: '4px',
+                                    zIndex: 5
+                                }}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
                     </div>
 
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                    <button
                         disabled={loading}
                         type="submit"
-                        style={{
-                            width: '100%',
-                            padding: '1rem',
-                            backgroundColor: 'var(--primary)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            marginTop: '1rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.5rem'
-                        }}
+                        className="auth-btn"
                     >
                         {loading ? 'Creating account...' : 'Create Account'} <ArrowRight size={20} />
-                    </motion.button>
+                    </button>
                 </form>
 
-                <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.95rem' }}>
-                    <span style={{ color: 'var(--text-muted)' }}>Already have an account? </span>
-                    <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>Login</Link>
+                <div className="auth-footer">
+                    <span>Already have an account? </span>
+                    <Link to="/login">Sign In</Link>
                 </div>
             </motion.div>
         </div>
     );
 };
 
-export default Register;
+export default SignUp;

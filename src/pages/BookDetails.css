@@ -13,6 +13,7 @@
 .book-details-overlay.full-page {
     position: relative;
     height: auto;
+    min-height: 100vh;
     z-index: 1;
     pointer-events: auto;
     background: var(--bg-main);
@@ -36,16 +37,18 @@
     position: relative;
     margin-top: auto;
     width: 100%;
-    height: 100vh;
+    height: 98vh;
+    /* Slid up almost to the top */
     background: var(--bg-main);
     border-top-left-radius: 32px;
     border-top-right-radius: 32px;
     box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.5);
     overflow-y: auto;
-    padding-top: 60px;
-    padding-bottom: 150px;
+    padding-top: 25px;
+    padding-bottom: 40px;
     pointer-events: auto;
     scrollbar-gutter: stable;
+    /* Prevent body from scrolling when modal is open handled in JS */
 }
 
 .book-details-page.full-page {
@@ -103,7 +106,7 @@
     color: var(--text-main);
     font-size: 0.9rem;
     font-weight: 700;
-    margin-bottom: 2.5rem;
+    margin-bottom: 0.75rem;
     transition: var(--transition-fast);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -122,7 +125,7 @@
 .details-layout {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
-    gap: 4rem;
+    gap: 2rem;
     align-items: start;
     width: 90%;
     max-width: 1200px;
@@ -131,7 +134,8 @@
 
 .details-image {
     position: sticky;
-    top: 20px;
+    top: 100px;
+    /* Aligned with padding-top of full-page */
     border-radius: 24px;
     overflow: hidden;
     box-shadow: var(--shadow-lg);
@@ -174,7 +178,7 @@
 .breadcrumb {
     font-size: 0.9rem;
     color: var(--text-muted);
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
     font-weight: 600;
 }
 
@@ -192,10 +196,10 @@
 }
 
 .details-info h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 800;
     line-height: 1.15;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
     color: var(--text-main);
     letter-spacing: -0.03em;
 }
@@ -203,7 +207,7 @@
 .details-author {
     font-size: 1.05rem;
     color: var(--text-muted);
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.5rem;
     font-weight: 500;
 }
 
@@ -216,7 +220,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.5rem;
 }
 
 .stars {
@@ -238,13 +242,13 @@
     font-size: 2rem;
     font-weight: 800;
     color: var(--primary);
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.75rem;
     letter-spacing: -0.02em;
 }
 
 .details-description {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 20px;
@@ -265,10 +269,7 @@
     line-height: 1.7;
     color: var(--text-muted);
     margin: 0;
-    max-height: 200px;
-    overflow-y: auto;
-    padding-right: 15px;
-    /* More room for scrollbar */
+    /* Removed max-height and scroll to make the whole page scroll as one */
 }
 
 .details-description p::-webkit-scrollbar {
@@ -281,7 +282,7 @@
 }
 
 .inventory-status {
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.5rem;
     font-weight: 800;
     font-size: 0.9rem;
     display: flex;
@@ -377,7 +378,7 @@
 .details-actions {
     display: flex;
     gap: 1.5rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1rem;
     align-items: center;
 }
 
@@ -385,7 +386,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
-    padding-top: 2rem;
+    padding-top: 1rem;
     border-top: 1px solid var(--border);
 }
 
@@ -416,13 +417,13 @@
 
 @media (max-width: 1024px) {
     .book-details-page {
-        padding-top: 40px;
-        padding-bottom: 120px;
+        padding-top: 20px;
+        padding-bottom: 60px;
     }
 
     .details-layout {
         grid-template-columns: 1fr;
-        gap: 3rem;
+        gap: 1.5rem;
         width: 88%;
         /* Slightly narrower for better side margins */
     }
@@ -455,14 +456,14 @@
     .book-details-page {
         border-top-left-radius: 24px;
         border-top-right-radius: 24px;
-        padding-top: 30px;
-        padding-bottom: 100px;
+        padding-top: 20px;
+        padding-bottom: 40px;
     }
 
     .back-btn {
         padding: 0.6rem 1rem;
         font-size: 0.85rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     .details-image {
