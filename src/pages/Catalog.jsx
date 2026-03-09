@@ -14,6 +14,7 @@ const Catalog = () => {
     const [books, setBooks] = useState([]);
     const [filteredBooks, setFilteredBooks] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isFiltering, setIsFiltering] = useState(false);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
@@ -120,7 +121,13 @@ const Catalog = () => {
     }, []);
 
     useEffect(() => {
-        filterBooks();
+        setIsFiltering(true);
+        const timer = setTimeout(() => {
+            filterBooks();
+            setIsFiltering(false);
+        }, 500); // 500ms artificial delay for loading effect
+
+        return () => clearTimeout(timer);
     }, [searchTerm, selectedCategory, sortBy, books]);
 
     if (loading) return <Loading fullPage />;
@@ -135,7 +142,6 @@ const Catalog = () => {
                     >
                         Explore Our <span>Collection</span>
                     </motion.h1>
-                    <p>Discover thousands of books across all genres</p>
                 </div>
             </header>
 
@@ -206,8 +212,10 @@ const Catalog = () => {
                     Showing {filteredBooks.length} books {selectedCategory !== 'All' && `in ${selectedCategory}`}
                 </div>
 
-                {loading ? (
-                    <div className="loading-state">Loading your next story...</div>
+                {loading || isFiltering ? (
+                    <div className="loading-state">
+                        <Loading />
+                    </div>
                 ) : error ? (
                     <div className="error-state">⚠️ {error}</div>
                 ) : (

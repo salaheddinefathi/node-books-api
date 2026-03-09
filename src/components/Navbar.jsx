@@ -56,12 +56,12 @@ const Navbar = () => {
                     </Link>
 
                     {!user ? (
-                        <div className="auth-btns" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginLeft: '0.5rem' }}>
+                        <div className="auth-btns">
                             <Link to="/login" className="action-item">
-                                <div className="btn-glass" style={{ padding: '0.4rem 0.75rem', fontSize: '0.75rem', borderRadius: '10px' }}>Login</div>
+                                <div className="btn-glass login-btn">Login</div>
                             </Link>
                             <Link to="/signup" className="action-item">
-                                <div className="btn btn-primary" style={{ padding: '0.4rem 0.75rem', fontSize: '0.75rem', borderRadius: '10px' }}>Join Us</div>
+                                <div className="btn btn-primary join-btn">Join Us</div>
                             </Link>
                         </div>
                     ) : (
