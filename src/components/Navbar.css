@@ -164,12 +164,13 @@
     margin-left: 0.5rem;
 }
 
-.login-btn,
-.join-btn {
+.auth-btns .login-btn,
+.auth-btns .btn.join-btn {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
     border-radius: 12px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .mobile-menu-footer {
@@ -280,11 +281,17 @@
         margin-left: 0;
     }
 
-    .login-btn,
-    .join-btn {
-        padding: 0.4rem 0.6rem;
+    .auth-btns .login-btn,
+    .auth-btns .btn.join-btn {
+        padding: 0.35rem 0.6rem;
         font-size: 0.75rem;
         border-radius: 8px;
+        min-height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        line-height: 1;
     }
 
     .action-item {

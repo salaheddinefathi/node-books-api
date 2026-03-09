@@ -197,6 +197,17 @@ const Cart = () => {
                     return;
                 }
 
+                if (res.status === 404 && data.missingBookId) {
+                    toast.error(`❌ "${data.message.split(': ')[1]}" is no longer available. Automatically removing from cart.`);
+                    removeFromCart(data.missingBookId);
+                    return;
+                }
+
+                if (res.status === 404 && data.message && data.message.includes('Book not found')) {
+                    toast.error(`❌ ${data.message}. Please remove it from your cart.`);
+                    return;
+                }
+
                 // Generic error - still open WhatsApp as fallback but warn user
                 toast.error("Erreur système. Passage à la commande WhatsApp...");
                 clearCart();

@@ -388,11 +388,13 @@ button {
   }
 }
 
-/* ====== Mobile: 6 books per row fixed ====== */
+/* ====== Mobile: 2 books per row wrapped ====== */
 @media (max-width: 640px) {
   .books-grid {
-    grid-template-columns: repeat(6, 130px);
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem 0.5rem;
+    padding: 1rem 0;
+    overflow-x: hidden;
   }
 
   .book-card {

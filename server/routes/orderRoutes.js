@@ -47,7 +47,10 @@ router.post('/', auth, async (req, res) => {
             if (!book) {
                 await session.abortTransaction();
                 session.endSession();
-                return res.status(404).json({ message: `Book not found: ${item.title}` });
+                return res.status(404).json({
+                    message: `Book not found: ${item.title}`,
+                    missingBookId: item.book
+                });
             }
 
             if (book.stock < item.quantity) {

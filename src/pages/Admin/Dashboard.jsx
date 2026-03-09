@@ -28,7 +28,8 @@ import {
     Filter,
     ChevronRight,
     Eye,
-    ChevronLeft
+    ChevronLeft,
+    MessageCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import API_BASE_URL from '../../config/api';
@@ -823,91 +824,129 @@ const Dashboard = () => {
 
                 {/* Order Details Modal */}
                 {selectedOrder && (
-                    <div className="modal-overlay">
+                    <div className="modal-overlay" style={{ alignItems: window.innerWidth < 768 ? 'flex-end' : 'center', padding: window.innerWidth < 768 ? '0' : '1rem' }}>
                         <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
+                            initial={window.innerWidth < 768 ? { y: '100%' } : { scale: 0.9, opacity: 0 }}
+                            animate={window.innerWidth < 768 ? { y: 0 } : { scale: 1, opacity: 1 }}
+                            exit={window.innerWidth < 768 ? { y: '100%' } : { scale: 0.9, opacity: 0 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                             className="modal-content"
-                            style={{ maxWidth: '600px' }}
+                            style={{
+                                width: '100%',
+                                maxWidth: '500px',
+                                margin: window.innerWidth < 768 ? '0' : 'auto',
+                                borderRadius: window.innerWidth < 768 ? '24px 24px 0 0' : '20px',
+                                padding: '1.5rem',
+                                paddingBottom: window.innerWidth < 768 ? '2rem' : '1.5rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                maxHeight: window.innerWidth < 768 ? '90vh' : 'auto'
+                            }}
                         >
-                            <div className="modal-header">
+                            {/* Drag Handle for Mobile */}
+                            {window.innerWidth < 768 && (
+                                <div style={{ width: '40px', height: '5px', backgroundColor: 'var(--border)', borderRadius: '10px', margin: '0 auto 1.5rem' }} />
+                            )}
+
+                            <div className="modal-header" style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border)' }}>
                                 <div>
-                                    <h2 style={{ fontSize: '1.5rem', marginBottom: '0.2rem' }}>Order Details</h2>
-                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                                        #{selectedOrder.orderNumber} • {selectedOrder.customerPhone} • {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleDateString() : ''}
-                                    </p>
+                                    <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.2rem', fontFamily: 'var(--font-family)' }}>Order Details</h2>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                        <span style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '0.95rem' }}>#{selectedOrder.orderNumber}</span>
+                                        <span style={{ color: 'var(--text-muted)' }}>•</span>
+                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{selectedOrder.customerPhone}</span>
+                                        <span style={{ color: 'var(--text-muted)' }}>•</span>
+                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                            {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleDateString() : ''}
+                                        </span>
+                                    </div>
                                 </div>
-                                <button onClick={() => setSelectedOrder(null)}><X size={24} /></button>
+                                <button
+                                    onClick={() => setSelectedOrder(null)}
+                                    style={{ padding: '0.5rem', backgroundColor: 'var(--surface-hover)', borderRadius: '50%', display: 'flex' }}
+                                >
+                                    <X size={20} className="text-muted" />
+                                </button>
                             </div>
 
-                            <div className="order-items-scroll" style={{ maxHeight: '400px', overflowY: 'auto', marginBottom: '1.5rem', paddingRight: '0.5rem' }}>
+                            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '1rem' }}>Items in Order</h3>
+                            <div className="order-items-scroll" style={{ maxHeight: '40vh', overflowY: 'auto', marginBottom: '1.5rem', paddingRight: '0.5rem' }}>
                                 {selectedOrder.items.map((item, idx) => (
                                     <div key={idx} className="order-item-card" style={{
                                         display: 'flex',
                                         gap: '1rem',
                                         padding: '1rem',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                                        borderRadius: '12px',
+                                        backgroundColor: 'var(--surface-hover)',
+                                        borderRadius: '16px',
                                         marginBottom: '0.8rem',
-                                        border: '1px solid var(--border)'
+                                        border: '1px solid var(--border)',
+                                        alignItems: 'center'
                                     }}>
-                                        <img
-                                            src={item.cover?.startsWith('http') ? item.cover : `${API_BASE_URL}${item.cover}`}
-                                            alt={item.title}
-                                            style={{ width: '60px', height: '80px', borderRadius: '6px', objectFit: 'cover' }}
-                                        />
+                                        <div style={{ width: '65px', height: '65px', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#fff', border: '1px solid var(--border)' }}>
+                                            <img
+                                                src={item.cover?.startsWith('http') ? item.cover : `${API_BASE_URL}${item.cover}`}
+                                                alt={item.title}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        </div>
                                         <div style={{ flex: 1 }}>
-                                            <h4 style={{ marginBottom: '0.3rem' }}>{item.title}</h4>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Qty: {item.quantity}</span>
-                                                <span style={{ fontWeight: 600 }}>${(item.price * item.quantity).toFixed(2)}</span>
-                                            </div>
+                                            <h4 style={{ marginBottom: '0.2rem', fontSize: '1.05rem', fontWeight: 700 }}>{item.title}</h4>
+                                            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 500, marginBottom: '0.4rem' }}>Qty: {item.quantity}</div>
+                                            <span style={{ fontWeight: 800, color: 'var(--text-main)' }}>${(item.price * item.quantity).toFixed(2)}</span>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="modal-footer" style={{ borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '1rem' }}>Payment Summary</h3>
+                            <div className="modal-footer" style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface-hover)', borderRadius: '16px', padding: '1.25rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 500 }}>
                                         <span>Subtotal</span>
-                                        <span>${selectedOrder.subtotal.toFixed(2)}</span>
+                                        <span style={{ color: 'var(--text-main)' }}>${selectedOrder.subtotal.toFixed(2)}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 500 }}>
                                         <span>Livraison</span>
-                                        <span>${selectedOrder.shipping?.toFixed(2) || '0.00'}</span>
+                                        <span style={{ color: 'var(--text-main)' }}>${selectedOrder.shipping?.toFixed(2) || '0.00'}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem' }}>
-                                        <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>Total Payable</span>
-                                        <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>${selectedOrder.total.toFixed(2)}</span>
+                                    <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: '0.25rem 0' }} />
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)' }}>Total Payable</span>
+                                        <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)' }}>${selectedOrder.total.toFixed(2)}</span>
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                     {selectedOrder.status === 'pending' && (
-                                        <>
+                                        <div style={{ display: 'flex', gap: '0.75rem' }}>
                                             <button
                                                 className="btn-confirm"
                                                 onClick={() => updateOrderStatus(selectedOrder._id, 'confirmed')}
-                                                style={{ padding: '0.8rem 1.5rem', borderRadius: '10px', backgroundColor: '#10b981', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                                style={{ flex: 1, padding: '0.9rem', borderRadius: '12px', backgroundColor: '#10b981', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: 600, boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)', transition: 'transform 0.2s' }}
+                                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                             >
-                                                <CheckCircle size={18} /> Confirm Payment
+                                                <CheckCircle size={18} /> Confirm
                                             </button>
                                             <button
                                                 className="btn-cancel"
                                                 onClick={() => updateOrderStatus(selectedOrder._id, 'cancelled')}
-                                                style={{ padding: '0.8rem 1.5rem', borderRadius: '10px', backgroundColor: '#ef4444', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                                style={{ flex: 1, padding: '0.9rem', borderRadius: '12px', backgroundColor: '#ef4444', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: 600, boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)', transition: 'transform 0.2s' }}
+                                                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                             >
-                                                <XCircle size={18} /> Cancel Order
+                                                <XCircle size={18} /> Cancel
                                             </button>
-                                        </>
+                                        </div>
                                     )}
                                     <button
                                         onClick={() => window.open(`https://wa.me/${selectedOrder.customerPhone}`, '_blank')}
-                                        style={{ padding: '0.8rem 1.5rem', borderRadius: '10px', backgroundColor: '#25D366', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', backgroundColor: '#25D366', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', fontWeight: 600, fontSize: '1.05rem', boxShadow: '0 4px 12px rgba(37, 211, 102, 0.25)', transition: 'transform 0.2s', ...((window.innerWidth >= 768 && selectedOrder.status !== 'pending') ? { marginTop: '0.5rem' } : {}) }}
+                                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                     >
-                                        <Phone size={18} /> Chat with Customer
+                                        <MessageCircle fill="currentColor" size={22} className="text-white" style={{ display: 'none' }} />
+                                        <Phone fill="currentColor" size={20} /> Chat with Customer
                                     </button>
                                 </div>
                             </div>
