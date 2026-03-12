@@ -204,6 +204,18 @@ button {
   display: none;
 }
 
+/* Helper for horizontal rows (e.g. on Home page) */
+.books-grid.horizontal-row {
+  grid-template-columns: repeat(auto-fill, 180px);
+  display: flex;
+  overflow-x: auto;
+  gap: 2.5rem;
+}
+
+.books-grid.horizontal-row .book-card {
+  flex: 0 0 180px;
+}
+
 .book-card {
   background: transparent;
   border-radius: 12px;

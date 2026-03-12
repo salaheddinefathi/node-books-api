@@ -478,6 +478,15 @@
     padding: 0 10px;
 }
 
+.book-row-wrapper.no-scroll {
+    padding: 0;
+}
+
+.book-row-wrapper.no-scroll .horizontal-row {
+    padding: 1rem 0;
+    justify-content: flex-start;
+}
+
 .row-nav-btn {
     position: absolute;
     top: 50%;

@@ -240,12 +240,16 @@ const BookRow = ({ books, handleQuickAdd, API_BASE_URL, location }) => {
         }
     };
 
+    const showArrows = books.length > 5; // Arraws ghir ila kano ktar mn 5 ktob f row
+
     return (
-        <div className="book-row-wrapper">
-            <button className="row-nav-btn prev pc-only" onClick={() => scroll('left')}>
-                <ChevronLeft size={24} />
-            </button>
-            <div className="books-grid" ref={rowRef}>
+        <div className={`book-row-wrapper ${!showArrows ? 'no-scroll' : ''}`}>
+            {showArrows && (
+                <button className="row-nav-btn prev pc-only" onClick={() => scroll('left')}>
+                    <ChevronLeft size={24} />
+                </button>
+            )}
+            <div className="books-grid horizontal-row" ref={rowRef}>
                 {books.map((book, index) => (
                     <motion.div
                         key={book._id || index}
@@ -283,9 +287,11 @@ const BookRow = ({ books, handleQuickAdd, API_BASE_URL, location }) => {
                     </motion.div>
                 ))}
             </div>
-            <button className="row-nav-btn next pc-only" onClick={() => scroll('right')}>
-                <ChevronRight size={24} />
-            </button>
+            {showArrows && (
+                <button className="row-nav-btn next pc-only" onClick={() => scroll('right')}>
+                    <ChevronRight size={24} />
+                </button>
+            )}
         </div>
     );
 };
