@@ -34,6 +34,7 @@ import {
 import toast from 'react-hot-toast';
 import API_BASE_URL from '../../config/api';
 import './Admin.css';
+import imageCompression from 'browser-image-compression';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -49,6 +50,7 @@ const Dashboard = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [formData, setFormData] = useState({ title: '', author: '', price: '', category: 'Fiction', stock: '', description: '' });
     const [coverFile, setCoverFile] = useState(null);
+    const [isCompressing, setIsCompressing] = useState(false);
     const [editModal, setEditModal] = useState({ show: false, book: null, field: '', value: '' });
 
     useEffect(() => {
@@ -243,6 +245,30 @@ const Dashboard = () => {
             }
         } catch (err) {
             console.error('Update status error:', err);
+        }
+    };
+
+    const handleImageChange = async (e) => {
+        const imageFile = e.target.files[0];
+        if (!imageFile) return;
+
+        // options bach n-compressiw tswira
+        const options = {
+            maxSizeMB: 0.8, // t-kon fiha max 800KB
+            maxWidthOrHeight: 1600, // max resolution
+            useWebWorker: true,
+            fileType: 'image/webp' // convert to webp bach t-kon khfifa
+        };
+
+        try {
+            setIsCompressing(true);
+            const compressedFile = await imageCompression(imageFile, options);
+            setCoverFile(compressedFile);
+        } catch (error) {
+            console.error('Compression error:', error);
+            setCoverFile(imageFile); // ila w9e3 error n-khliw tswira original
+        } finally {
+            setIsCompressing(false);
         }
     };
 
@@ -811,8 +837,10 @@ const Dashboard = () => {
                                             <input
                                                 type="file"
                                                 accept="image/*"
-                                                onChange={(e) => setCoverFile(e.target.files[0])}
+                                                onChange={handleImageChange}
                                             />
+                                            {isCompressing && <p style={{ fontSize: '0.8rem', color: 'var(--primary)', marginTop: '0.5rem' }}>⌛ Compressing image...</p>}
+                                            {coverFile && !isCompressing && <p style={{ fontSize: '0.8rem', color: '#10b981', marginTop: '0.5rem' }}>✓ Image ready ({(coverFile.size / 1024).toFixed(0)} KB)</p>}
                                         </div>
                                     </div>
                                 </div>
@@ -824,29 +852,16 @@ const Dashboard = () => {
 
                 {/* Order Details Modal */}
                 {selectedOrder && (
-                    <div className="modal-overlay" style={{ alignItems: window.innerWidth < 768 ? 'flex-end' : 'center', padding: window.innerWidth < 768 ? '0' : '1rem' }}>
+                    <div className="modal-overlay sliding-modal-overlay">
                         <motion.div
-                            initial={window.innerWidth < 768 ? { y: '100%' } : { scale: 0.9, opacity: 0 }}
-                            animate={window.innerWidth < 768 ? { y: 0 } : { scale: 1, opacity: 1 }}
-                            exit={window.innerWidth < 768 ? { y: '100%' } : { scale: 0.9, opacity: 0 }}
+                            initial={{ y: '100%', opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: '100%', opacity: 0 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="modal-content"
-                            style={{
-                                width: '100%',
-                                maxWidth: '500px',
-                                margin: window.innerWidth < 768 ? '0' : 'auto',
-                                borderRadius: window.innerWidth < 768 ? '24px 24px 0 0' : '20px',
-                                padding: '1.5rem',
-                                paddingBottom: window.innerWidth < 768 ? '2rem' : '1.5rem',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                maxHeight: window.innerWidth < 768 ? '90vh' : 'auto'
-                            }}
+                            className="modal-content sliding-modal-content"
                         >
                             {/* Drag Handle for Mobile */}
-                            {window.innerWidth < 768 && (
-                                <div style={{ width: '40px', height: '5px', backgroundColor: 'var(--border)', borderRadius: '10px', margin: '0 auto 1.5rem' }} />
-                            )}
+                            <div className="mobile-drag-handle" />
 
                             <div className="modal-header" style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border)' }}>
                                 <div>

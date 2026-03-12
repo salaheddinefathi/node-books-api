@@ -131,7 +131,7 @@ const BookDetails = () => {
                             </div>
 
                             <div className="details-price">
-                                ${(book.price * quantity).toFixed(2)}
+                                {(book.price * quantity).toFixed(2)} DH
                             </div>
 
                             <div className="details-description">

@@ -7,6 +7,7 @@ const bookSchema = new mongoose.Schema({
     category: { type: String, required: true },
     stock: { type: Number, required: true, default: 0 },
     cover: { type: String, required: true },
+    coverId: { type: String },
     description: { type: String },
     rating: { type: Number, default: 0 },
 }, { timestamps: true });

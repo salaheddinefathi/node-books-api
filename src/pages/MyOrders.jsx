@@ -97,7 +97,7 @@ const MyOrders = () => {
                                             >
                                                 {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                             </span>
-                                            <span className="order-total">${order.total.toFixed(2)}</span>
+                                            <span className="order-total">{order.total.toFixed(2)} DH</span>
                                             {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                         </div>
                                     </div>
@@ -125,16 +125,16 @@ const MyOrders = () => {
                                                                 <p className="order-item-qty">Qty: {item.quantity}</p>
                                                             </div>
                                                             <span className="order-item-price">
-                                                                ${(item.price * item.quantity).toFixed(2)}
+                                                                {(item.price * item.quantity).toFixed(2)} DH
                                                             </span>
                                                         </div>
                                                     ))}
                                                 </div>
                                                 <div className="order-summary-footer">
                                                     <div className="order-totals">
-                                                        <span>Subtotal: <strong>${order.subtotal?.toFixed(2)}</strong></span>
-                                                        <span>Tax: <strong>${order.tax?.toFixed(2)}</strong></span>
-                                                        <span className="total-final">Total: <strong>${order.total?.toFixed(2)}</strong></span>
+                                                        <span>Subtotal: <strong>{order.subtotal?.toFixed(2)} DH</strong></span>
+                                                        <span>Tax: <strong>{order.tax?.toFixed(2)} DH</strong></span>
+                                                        <span className="total-final">Total: <strong>{order.total?.toFixed(2)} DH</strong></span>
                                                     </div>
                                                     <a
                                                         href={`https://wa.me/212777725652`}

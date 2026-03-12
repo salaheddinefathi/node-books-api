@@ -98,14 +98,14 @@ const Cart = () => {
                 ``,
                 ...cart.map((item) => {
                     const bookUrl = `${appUrl}/book/${item._id}`;
-                    return `Book: *${item.title}*\nQuantity: ${item.quantity}\nPrice: $${(item.price * item.quantity).toFixed(2)}\nView Details: ${bookUrl}\n`;
+                    return `Book: *${item.title}*\nQuantity: ${item.quantity}\nPrice: ${(item.price * item.quantity).toFixed(2)} DH\nView Details: ${bookUrl}\n`;
                 }),
                 `💰 *Order Summary:*`,
                 ``,
-                `Subtotal: $${cartTotal.toFixed(2)}`,
-                shipping > 0 ? `Shipping: $${shipping.toFixed(2)}` : `Shipping: FREE 🚚`,
+                `Subtotal: ${cartTotal.toFixed(2)} DH`,
+                shipping > 0 ? `Shipping: ${shipping.toFixed(2)} DH` : `Shipping: FREE 🚚`,
                 ``,
-                `*TOTAL PAYABLE: $${finalTotal.toFixed(2)} ✅*`,
+                `*TOTAL PAYABLE: ${finalTotal.toFixed(2)} DH ✅*`,
                 ``,
                 `📍 Our team will contact you shortly to confirm the delivery schedule.`,
                 ``,
@@ -283,7 +283,7 @@ const Cart = () => {
                                             <h3>{item.title}</h3>
                                         </Link>
                                         <p className="item-author">By {item.author}</p>
-                                        <p className="item-price-unit">${item.price}</p>
+                                        <p className="item-price-unit">{item.price} DH</p>
                                     </div>
                                     <div className="item-controls" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                                         <div className="quantity-controls">
@@ -310,7 +310,7 @@ const Cart = () => {
                                     </div>
                                 </div>
                                 <div className="item-total">
-                                    ${(item.price * item.quantity).toFixed(2)}
+                                    {(item.price * item.quantity).toFixed(2)} DH
                                 </div>
                             </motion.div>
                         ))}
@@ -325,12 +325,12 @@ const Cart = () => {
                         <h3>Order Invoice</h3>
                         <div className="summary-row">
                             <span>Items ({cart.length})</span>
-                            <span>${getCartTotal().toFixed(2)}</span>
+                            <span>{getCartTotal().toFixed(2)} DH</span>
                         </div>
                         <div className="summary-row">
                             <span>Shipping Costs</span>
                             {parseFloat(settings.shippingCost) > 0 ? (
-                                <span>${parseFloat(settings.shippingCost).toFixed(2)}</span>
+                                <span>{parseFloat(settings.shippingCost).toFixed(2)} DH</span>
                             ) : (
                                 <span className="free">Calculated • FREE</span>
                             )}
@@ -340,7 +340,7 @@ const Cart = () => {
 
                         <div className="total-row">
                             <span>Total Payable</span>
-                            <span>${(getCartTotal() + (parseFloat(settings.shippingCost) || 0)).toFixed(2)}</span>
+                            <span>{(getCartTotal() + (parseFloat(settings.shippingCost) || 0)).toFixed(2)} DH</span>
                         </div>
 
                         <button className="checkout-btn" onClick={handleCheckout}>

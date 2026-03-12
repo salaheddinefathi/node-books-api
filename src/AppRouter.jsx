@@ -13,6 +13,7 @@ import Analytics from './pages/Admin/Analytics';
 import Support from './pages/Support';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import { AnimatePresence } from 'framer-motion';
 
 import AdminLayout from './components/Admin/AdminLayout';
@@ -24,12 +25,22 @@ const NavigationRoutes = () => {
     const isAdmin = location.pathname.startsWith('/admin');
 
     if (isAdmin) {
+        const isAdminLogin = location.pathname === '/admin/login';
+
+        if (isAdminLogin) {
+            return (
+                <Routes>
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="*" element={<Navigate to="/admin/login" replace />} />
+                </Routes>
+            );
+        }
+
         return (
             <AdminLayout>
                 <Routes>
                     <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-                    <Route path="/admin/login" element={<AdminLogin />} />
                     <Route path="*" element={<Navigate to="/admin" replace />} />
                 </Routes>
             </AdminLayout>
@@ -68,6 +79,7 @@ const NavigationRoutes = () => {
                     )}
                 </AnimatePresence>
             </main>
+            {!isAdmin && !isAuthPage && <Footer />}
         </div>
     );
 };

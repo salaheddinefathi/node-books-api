@@ -272,7 +272,7 @@ const BookRow = ({ books, handleQuickAdd, API_BASE_URL, location }) => {
                                 <h3>{book.title}</h3>
                                 <p className="author">{book.author}</p>
                                 <div className="book-footer">
-                                    <span className="price">${book.price}</span>
+                                    <span className="price">{book.price} DH</span>
                                     <div className="rating">
                                         <Star size={14} fill="#f59e0b" color="#f59e0b" />
                                         <span>{book.rating || 4.5}</span>

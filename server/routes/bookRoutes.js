@@ -5,19 +5,14 @@ const path = require('path');
 const fs = require('fs');
 const Book = require('../models/Book');
 const auth = require('../middleware/authMiddleware');
+const imagekit = require('../config/imagekit');
 
-// Multer Storage Configuration
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, '..', 'uploads');
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
+// Multer Storage Configuration - Using Memory Storage for ImageKit
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
-
-const upload = multer({ storage: storage });
 
 // @route   GET /api/books
 // @desc    Get all books (with optional category filter)
@@ -48,25 +43,39 @@ router.get('/:id', async (req, res) => {
 });
 
 // @route   POST /api/books
-// @desc    Add a new book with cover upload
+// @desc    Add a new book with cover upload via ImageKit
 router.post('/', auth, upload.single('cover'), async (req, res) => {
-    const { title, author, price, category, stock, description } = req.body;
-    const cover = req.file ? `/uploads/${req.file.filename}` : '';
-
-    const book = new Book({
-        title,
-        author,
-        price,
-        category,
-        stock,
-        cover,
-        description
-    });
-
     try {
+        const { title, author, price, category, stock, description } = req.body;
+        let cover = '';
+        let coverId = '';
+
+        if (req.file) {
+            // Upload to ImageKit
+            const ikResponse = await imagekit.upload({
+                file: req.file.buffer,
+                fileName: `book_${Date.now()}_${req.file.originalname}`,
+                folder: '/books'
+            });
+            cover = ikResponse.url;
+            coverId = ikResponse.fileId;
+        }
+
+        const book = new Book({
+            title,
+            author,
+            price,
+            category,
+            stock,
+            cover,
+            coverId,
+            description
+        });
+
         const newBook = await book.save();
         res.status(201).json(newBook);
     } catch (err) {
+        console.error('Upload Error:', err);
         res.status(400).json({ message: err.message });
     }
 });
@@ -75,23 +84,27 @@ router.post('/', auth, upload.single('cover'), async (req, res) => {
 router.delete('/:id', auth, async (req, res) => {
     console.log('Backend: DELETE request for book ID:', req.params.id);
     try {
-        // Find the book first to get the cover image path
         const book = await Book.findById(req.params.id);
         if (!book) {
             console.log('Book not found in DB');
             return res.status(404).json({ message: 'Book not found' });
         }
 
-        // PHYSICAL FILE DELETION
-        if (book.cover && !book.cover.startsWith('http')) {
+        // PHYSICAL FILE DELETION (IMAGEKIT)
+        if (book.coverId) {
+            console.log('Attempting to delete image from ImageKit:', book.coverId);
+            try {
+                await imagekit.deleteFile(book.coverId);
+                console.log('Image deleted from ImageKit successfully');
+            } catch (ikErr) {
+                console.error('ImageKit Deletion Error:', ikErr.message);
+                // We continue even if image deletion fails, to ensure DB record is removed
+            }
+        } else if (book.cover && !book.cover.startsWith('http')) {
+            // FALLBACK for old local files
             const filePath = path.join(__dirname, '..', book.cover);
-            console.log('Attempting to delete image file:', filePath);
-
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
-                console.log('Image file deleted successfully');
-            } else {
-                console.warn('Image file not found on server:', filePath);
             }
         }
 
